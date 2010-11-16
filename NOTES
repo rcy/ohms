@@ -1,5 +1,7 @@
- GET /templates/_id
- POST /templates
+-*- outline -*-
+* rest api
+GET /templates/_id
+POST /templates
 GET /templates
 PUT /templates/_id
 DELETE /templates/_id
@@ -14,3 +16,8 @@ POST /items
 PUT /items/_id
 DELETE /items/_id
 
+
+* todo
+** research filesystem mapping for design documents
+could just use couchapp, but maybe there is a node solution
+** create views for pulling all relevant documents in a hierarchical resource
