@@ -1,0 +1,16 @@
+ GET /templates/_id
+ POST /templates
+GET /templates
+PUT /templates/_id
+DELETE /templates/_id
+
+GET /objects
+POST /objects
+PUT /objects/_id
+DELETE /objects/_id
+
+GET /items
+POST /items
+PUT /items/_id
+DELETE /items/_id
+
