@@ -40,7 +40,7 @@ ddoc.validate_doc_update =
     }
   };
 
-ddoc.views.resource = {
+ddoc.views.type = {
   map: function(doc) {
     if (doc.type) {
       emit(doc.type, {_id: doc.parent});

@@ -9,8 +9,8 @@ var server_port = 8080;
 var router = new(journey.Router)(function (map) {
   map.root.bind(function (res) { res.send("Welcome") });
 
-  map.get(/^([a-z]+)s$/).bind(function (res, type) {
-    db.view('test', type, {})
+  map.get(/^([a-z]+)$/).bind(function (res, type) {
+    db.view('app', 'type', {key:type})
       .then(function (doc) {
         res.send(200, {}, doc);
       }, function(err) {
@@ -18,7 +18,7 @@ var router = new(journey.Router)(function (map) {
       });
   });
 
-  map.get(/^([a-z]+)s\/(.+)$/).bind(function (res, type, id) {
+  map.get(/^([a-z]+)\/(.+)$/).bind(function (res, type, id) {
     db.getDoc(id)
       .then(function (doc) {
         if (doc) {
@@ -29,7 +29,7 @@ var router = new(journey.Router)(function (map) {
       });
   });
 
-  map.post(/^([a-z]+)s$/).bind(function (res, type, data) {
+  map.post(/^([a-z]+)$/).bind(function (res, type, data) {
     data.type = type;
     data.created_at = data.updated_at = Date.now();
     if (type === "template") {
@@ -43,7 +43,7 @@ var router = new(journey.Router)(function (map) {
       });
   });
 
-  map.del(/^([a-z]+)s\/(.+)\/(.+)$/).bind(function (res, type, id, rev) {
+  map.del(/^([a-z]+)\/(.+)\/(.+)$/).bind(function (res, type, id, rev) {
     db.removeDoc(id, rev)
       .then(function (doc) {
         res.send(200, {}, doc);
