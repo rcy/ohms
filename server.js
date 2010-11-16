@@ -2,7 +2,7 @@ var sys = require('sys');
 var journey = require('journey');
 var couchdb = require('couchdb');
 var client = couchdb.createClient({port:5984});
-var db = client.db('foo');
+var db = client.db(process.argv[1]);
 
 var server_port = 8080;
 
@@ -10,7 +10,7 @@ var router = new(journey.Router)(function (map) {
   map.root.bind(function (res) { res.send("Welcome") });
 
   map.get(/^([a-z]+)$/).bind(function (res, type) {
-    db.view('app', 'type', {key:type})
+    db.view('app', 'type', {key: type})
       .then(function (doc) {
         res.send(200, {}, doc);
       }, function(err) {
@@ -24,7 +24,7 @@ var router = new(journey.Router)(function (map) {
         if (doc) {
           res.send(200, {}, doc);
         } else {
-          res.send(404, {}, null);
+          res.send(404, {}, {error: "not_found"});
         }
       });
   });

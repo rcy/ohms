@@ -8,4 +8,4 @@ sync:
 	couchapp sync app.js http://localhost:5984/$(DB)
 
 server:
-	node ./server.js
+	node ./server.js $(DB)
