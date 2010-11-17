@@ -1,10 +1,9 @@
 var sys = require('sys');
 var journey = require('journey');
+var server_port = 8080;
 var couchdb = require('couchdb');
 var client = couchdb.createClient({port:5984});
-var db = client.db(process.argv[1]);
-
-var server_port = 8080;
+var db = client.db(process.argv[2]);
 
 var router = new(journey.Router)(function (map) {
   map.root.bind(function (res) { res.send("Welcome") });

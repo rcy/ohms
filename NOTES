@@ -18,6 +18,6 @@ DELETE /items/_id
 
 
 * todo
-** research filesystem mapping for design documents
-could just use couchapp, but maybe there is a node solution
 ** create views for pulling all relevant documents in a hierarchical resource
+
+

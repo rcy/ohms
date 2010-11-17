@@ -1,11 +1,14 @@
-DB=foo
+DB?=dummy
+COUCH=http://localhost:5984
 
-push:
-	couchapp push app.js http://localhost:5984/$(DB)
-
-# couchapp sync doesnt work
-sync:
-	couchapp sync app.js http://localhost:5984/$(DB)
-
-server:
+server: push
 	node ./server.js $(DB)
+
+push: db
+	couchapp push app.js $(COUCH)/$(DB)
+
+db:
+	curl -XPUT $(COUCH)/$(DB)
+drop:
+	curl -XDELETE $(COUCH)/$(DB)
+
