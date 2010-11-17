@@ -9,7 +9,7 @@ var router = new(journey.Router)(function (map) {
   map.root.bind(function (res) { res.send("Welcome") });
 
   map.get(/^([a-z]+)$/).bind(function (res, type) {
-    db.view('app', 'type', {key: type})
+    db.view('app', 'type', {key: type, include_docs: true})
       .then(function (doc) {
         res.send(200, {}, doc);
       }, function(err) {
@@ -32,14 +32,21 @@ var router = new(journey.Router)(function (map) {
     data.type = type;
     data.created_at = data.updated_at = Date.now();
     if (type === "template") {
-      data.parents = [data['parent']];
-    }
-    db.saveDoc(data)
-      .then(function (doc) {
-        res.send(200, {}, doc);
-      }, function(err) {
-        res.send(err.status, {}, err);
+      console.log("creating template");
+      fetchparents(data, function(parents) {
+        data.parents = parents;
+        delete data.parent;
+        console.log(data);
+        db.saveDoc(data)
+          .then(function (doc) {
+            res.send(200, {}, doc);
+          }, function(err) {
+            res.send(err.status, {}, err);
+          });
+      }, function(message) {
+        res.send(403, {}, {error: message});
       });
+    }
   });
 
   map.del(/^([a-z]+)\/(.+)\/(.+)$/).bind(function (res, type, id, rev) {
@@ -64,5 +71,28 @@ require('http').createServer(function (request, response) {
     });
   });
 }).listen(server_port);
+
+function fetchparents(childdoc, success, failure) {
+  var parent_id = childdoc.parent;
+  if (parent_id) {
+    // fetch parent hierarchy
+    console.log("fetching parent");
+    db.getDoc(parent_id)
+      .then(function(doc) {
+        if (doc) {
+          if (doc.type === childdoc.type) {
+            success && success(doc.parents.concat([parent_id]));
+          } else {
+            failure && failure("parent doc type mismatch");
+          }
+        } else {
+          failure && failure("parent doc not found");
+        }
+      });
+  } else {
+    // no parents
+    success && success([]);
+  }
+}
 
 console.log("listening on " + server_port);
