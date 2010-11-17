@@ -19,14 +19,36 @@ var router = new(journey.Router)(function (map) {
 
   // GET type/id
   map.get(/^([a-z]+)\/(.+)$/).bind(function (res, type, id) {
-    db.getDoc(id)
-      .then(function (doc) {
-        if (doc) {
-          res.send(200, {}, doc);
-        } else {
-          res.send(404, {}, {error: "not_found"});
-        }
-      });
+    // fetch document via the tree view, and collect hierachy into a single doc
+    if (type === "template") {
+      db.view('app', 'tree', {startkey: [id, 0], endkey: [id, 9999], include_docs: true})
+        .then(function(results) {
+          rows = results.rows;
+          console.log(rows);
+          if (rows.length > 0) {
+            var doc = rows.splice(0,1)[0].doc;
+            console.log(['doc:',doc]);
+            for (var i in rows) {
+              doc.fields = rows[i].doc.fields.concat(doc.fields);
+            }
+            res.send(200, {}, doc);
+          } else {
+            res.send(404, {}, {error: "not_found"});
+          }
+        }, function(err) {
+          res.send(err.status, {}, err);
+        });
+    } else {
+      // just fetch a regular document
+      db.getDoc(id)
+        .then(function (doc) {
+          if (doc) {
+            res.send(200, {}, doc);
+          } else {
+            res.send(404, {}, {error: "not_found"});
+          }
+        });
+    }
   });
 
   map.post(/^([a-z]+)$/).bind(function (res, type, data) {
@@ -82,7 +104,7 @@ function fetchparents(childdoc, success, failure) {
       .then(function(doc) {
         if (doc) {
           if (doc.type === childdoc.type) {
-            success && success(doc.parents.concat([parent_id]));
+            success && success([parent_id].concat(doc.parents));
           } else {
             failure && failure("parent doc type mismatch");
           }
