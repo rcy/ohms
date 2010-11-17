@@ -47,3 +47,16 @@ ddoc.views.type = {
     }
   }
 };
+
+ddoc.views.tree = {
+  map: function(doc) {
+    if (doc.type) {
+      emit([doc._id, 0], null);
+      if (doc.parents) {
+        for (var i in doc.parents) {
+          emit([doc._id, Number(i)+1], {_id: doc.parents[i]});
+        }
+      }
+    }
+  }
+};

@@ -17,6 +17,7 @@ var router = new(journey.Router)(function (map) {
       });
   });
 
+  // GET type/id
   map.get(/^([a-z]+)\/(.+)$/).bind(function (res, type, id) {
     db.getDoc(id)
       .then(function (doc) {
