@@ -1,7 +1,7 @@
 DB?=dummy
 COUCH=http://localhost:5984
 
-server: push
+server:
 	node ./server.js $(DB)
 
 push: db
