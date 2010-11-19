@@ -6,9 +6,7 @@ var client = couchdb.createClient({port:5984});
 var db = client.db(process.argv[2]);
 
 var router = new(journey.Router)(function (map) {
-  map.root.bind(function (res) { res.send("Welcome") });
-
-  map.get(/^([a-z]+)$/).bind(function (res, type) {
+  map.get(/^api\/([a-z]+)$/).bind(function (res, type) {
     db.view('app', 'type', {key: type, include_docs: true})
       .then(function (doc) {
         res.send(200, {}, doc);
@@ -18,7 +16,7 @@ var router = new(journey.Router)(function (map) {
   });
 
   // GET type/id
-  map.get(/^([a-z]+)\/(.+)$/).bind(function (res, type, id) {
+  map.get(/^api\/([a-z]+)\/(.+)$/).bind(function (res, type, id) {
     // fetch document via the tree view, and collect hierachy into a single doc
     if (type === "template") {
       db.view('app', 'tree', {startkey: [id, 0], endkey: [id, 9999], include_docs: true})
@@ -27,9 +25,10 @@ var router = new(journey.Router)(function (map) {
           console.log(rows);
           if (rows.length > 0) {
             var doc = rows.splice(0,1)[0].doc;
+            doc.allfields = doc.fields;
             console.log(['doc:',doc]);
             for (var i in rows) {
-              doc.fields = rows[i].doc.fields.concat(doc.fields);
+              doc.allfields = rows[i].doc.fields.concat(doc.allfields);
             }
             res.send(200, {}, doc);
           } else {
@@ -51,7 +50,7 @@ var router = new(journey.Router)(function (map) {
     }
   });
 
-  map.post(/^([a-z]+)$/).bind(function (res, type, data) {
+  map.post(/^api\/([a-z]+)$/).bind(function (res, type, data) {
     data.type = type;
     data.created_at = data.updated_at = Date.now();
     if (type === "template") {
@@ -72,7 +71,7 @@ var router = new(journey.Router)(function (map) {
     }
   });
 
-  map.del(/^([a-z]+)\/(.+)\/(.+)$/).bind(function (res, type, id, rev) {
+  map.del(/^api\/([a-z]+)\/(.+)\/(.+)$/).bind(function (res, type, id, rev) {
     db.removeDoc(id, rev)
       .then(function (doc) {
         res.send(200, {}, doc);
@@ -82,16 +81,34 @@ var router = new(journey.Router)(function (map) {
   });
 });
 
+var node_static = require('node-static');
+var file = new(node_static.Server)('public', { cache: 7200, headers: {} });
+
 require('http').createServer(function (request, response) {
   var body = "";
   request.addListener('data', function (chunk) {
     body += chunk;
   });
   request.addListener('end', function () {
-    router.route(request, body, function (result) {
-      response.writeHead(result.status, result.headers);
-      response.end(result.body);
-    });
+    var urlpath = request.url.split(/\//);
+    if (urlpath[1] === 'api') {
+      // route through journey for json api
+      router.route(request, body, function (result) {
+        response.writeHead(result.status, result.headers);
+        response.end(result.body);
+      });
+    } else {
+      // serve static files under /public
+      file.serve(request, response, function (err, res) {
+        if (err) { // An error as occured
+          sys.error("> Error serving " + request.url + " - " + err.message);
+          response.writeHead(err.status, err.headers);
+          response.end();
+        } else { // The file was served successfully
+          sys.puts("> " + request.url + " - " + res.message);
+        }
+      });
+    }
   });
 }).listen(server_port);
 
