@@ -5,17 +5,31 @@
     <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.2.0/build/yui/yui-min.js&gallery-2009.11.02-20/build/gallery-port/gallery-port-min.js&gallery-2009.11.19-20/build/gallery-treeview/gallery-treeview-min.js"></script>
     <!-- <script type="text/javascript" charset="utf-8" src="http://yui.yahooapis.com/3.2.0/build/yui/yui-min.js"></script> -->
 
-    <script type="text/javascript" charset="utf-8" src="datasource.js"></script>
   </head>
-  <body>
+  <body class="yui3-skin-sam">
     <div class="sidebar">
       <div id="templateTree"></div>
     </div>
 
     <div class="main">
-      <div id="detail"></div>
+      <h1 id="header">&nbsp;</h1>
+
+      <div id="detail">
+        <ul>
+          <li><a href="#template">properties</a></li>
+          <li><a href="#objects">types</a></li>
+          <li><a href="#items">items</a></li>
+        </ul>
+        <div>
+          <div id="template"></div>
+          <div id="objects"></div>
+          <div id="items"></div>
+        </div>
+      </div>
+      
     </div>
 
     <div style="clear: both"></div>
   </body>
+  <script type="text/javascript" charset="utf-8" src="datasource.js"></script>
 </html>

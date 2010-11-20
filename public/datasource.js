@@ -1,4 +1,10 @@
-YUI().use('datasource', 'gallery-treeview', function(Y) {
+YUI().use('datasource', 'tabview', 'gallery-treeview', function(Y) {
+  //setup tabs
+  var tabview = new Y.TabView({
+    srcNode: '#detail'
+  });
+  tabview.render();
+
   //Associate the YAHOO variable with and instance of Dav Glass's Port utility
   var YAHOO = Y.Port();
 
@@ -39,12 +45,12 @@ YUI().use('datasource', 'gallery-treeview', function(Y) {
             });
           }
           // add to tree
-          nodes[elt.id] = new YAHOO.widget.TextNode(
+          nodes[elt.id] = new YAHOO.widget.MenuNode(
             { 
               label: elt.value.name, 
               id: elt.id,
               href: "#",
-              expanded: true
+              expanded: !elt.value.parent_id
             }
             , nodes[elt.value.parent_id] || rootNode);
         });
@@ -54,8 +60,11 @@ YUI().use('datasource', 'gallery-treeview', function(Y) {
         tree.subscribe("labelClick", function(node) {
           console.log(templates[node.data.id]);
           var t = templates[node.data.id];
-          var node = Y.one("#detail");
-          node.set('innerHTML', "<h1>"+t.name+"</h1>");
+          Y.one("#header").set('innerHTML', t.name);
+
+          // template tab
+          var node = Y.one("#template");
+          node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> property</button>');
           Y.Array.each(Y.clone(t.parents).reverse(), function(p) {
             Y.Array.each(p.fields, function(f) {
               node.append('<li class="inherited">'+f+"</li>");
@@ -64,6 +73,14 @@ YUI().use('datasource', 'gallery-treeview', function(Y) {
           Y.Array.each(t.fields, function(f) {
             node.append("<li>"+f+"</li>");
           });
+
+          // type tab
+          node = Y.one("#objects");
+          node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> type</button>');
+
+          // items tab
+          node = Y.one("#items");
+          node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> item</button>');
         });        
       },
       failure: function(e){
