@@ -43,10 +43,14 @@ YUI().use('datasource', 'gallery-treeview', function(Y) {
             { 
               label: elt.value.name, 
               id: elt.id,
+              href: "#",
               expanded: true
             }
             , nodes[elt.value.parent_id] || rootNode);
         });
+
+        tree.render();
+
         tree.subscribe("labelClick", function(node) {
           console.log(templates[node.data.id]);
           var t = templates[node.data.id];
@@ -60,9 +64,7 @@ YUI().use('datasource', 'gallery-treeview', function(Y) {
           Y.Array.each(t.fields, function(f) {
             node.append("<li>"+f+"</li>");
           });
-
         });        
-        tree.render();
       },
       failure: function(e){
         alert(e.error.message);
