@@ -7,7 +7,9 @@ var db = client.db(process.argv[2]);
 
 var router = new(journey.Router)(function (map) {
   map.get(/^api\/([a-z]+)$/).bind(function (res, type) {
-    db.view('app', 'type', {key: type, include_docs: true})
+    db.view('app', 'treeview', { startkey: [type,0]
+                                 , endkey: [type,9999]
+                                 , include_docs: false})
       .then(function (doc) {
         res.send(200, {}, doc);
       }, function(err) {
@@ -16,7 +18,7 @@ var router = new(journey.Router)(function (map) {
   });
 
   // GET type/id
-  map.get(/^api\/([a-z]+)\/(.+)$/).bind(function (res, type, id) {
+  map.get(/^api\/([a-z]+)\/([^&]+).*$/).bind(function (res, type, id) {
     // fetch document via the tree view, and collect hierachy into a single doc
     if (type === "template") {
       db.view('app', 'tree', {startkey: [id, 0], endkey: [id, 9999], include_docs: true})

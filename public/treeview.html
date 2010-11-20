@@ -1,0 +1,62 @@
+<html>
+  <head>
+    <link type="text/css" rel="stylesheet" 
+          href="http://yui.yahooapis.com/gallery-2010.02.17-20/build/gallery-treeview/assets/skins/sam/gallery-treeview.css" />
+    <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.0.0/build/yui/yui-min.js&gallery-2009.11.02-20/build/gallery-port/gallery-port-min.js&gallery-2009.11.19-20/build/gallery-treeview/gallery-treeview-min.js"></script>
+  </head>
+<body>
+  <div id="treeView"></div>
+
+<script language="javascript">
+
+//Create a YUI instance that uses the treeview gallery module
+YUI().use('gallery-treeview', function(Y) {
+
+  //Associate the YAHOO variable with and instance of Dav Glass's
+  //Port utility:
+  var YAHOO = Y.Port();
+
+  //Instantiate the Tree using standard YUI 2 syntax:
+  var tree = new YAHOO.widget.TreeView("treeView");
+  var root = tree.getRoot();
+  var fooNode = new YAHOO.widget.TextNode("foo",root);
+  var barNode = new YAHOO.widget.TextNode("bar",root);
+  var bazNode = new YAHOO.widget.TextNode("baz",root);
+  tree.popNode(barNode);
+  barNode.appendTo(fooNode);
+  tree.popNode(bazNode)
+  bazNode.appendTo(barNode);
+
+// , [
+//     {type:'Text', label:'Cars',expanded:true, children:[
+//       'Aston Martin',
+//       'Bugatti',
+//       {type: 'Text', label:'GM', href:"http://gm.com", expanded:false, children:[
+// 	'Buick',
+// 	'Cadillac',
+// 	'Chevrolet',
+// 	'GMC'
+//       ]},
+//       'Renault',
+//       'Toyota',
+//       'Volkswagon'
+//     ]
+//     },
+//     {label:'Computers', editable:true, children: [
+//       'Acer',
+//       'Apple',
+//       'HP',
+//       'Dell',
+//       {label:'another', children: ['foo','bar'], stuff:123}
+//     ]
+//     }
+//   ]);
+  
+  // Render the tree:
+  tree.render();
+  
+  
+});
+</script>
+</body>
+</html>

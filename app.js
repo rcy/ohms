@@ -40,10 +40,11 @@ ddoc.validate_doc_update =
     }
   };
 
-ddoc.views.type = {
+ddoc.views.treeview = {
   map: function(doc) {
     if (doc.type) {
-      emit(doc.type, {_id: doc.parent});
+      emit([doc.type, doc.parents.length], 
+           { name: doc.name, parent: doc.parents[0] });
     }
   }
 };
