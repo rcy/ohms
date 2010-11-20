@@ -25,13 +25,20 @@ YUI().use('datasource', 'gallery-treeview', function(Y) {
     request: "",
     callback: { 
       success: function(e){
-        // for each template doc, add it to the tree and to the templates
         Y.Array.each(e.response.results, function(elt) {
-          templates[elt.id] = elt.value;
-          templates[elt.id].children = [];
-          if (elt.value.parent_id) {
-            templates[elt.value.parent_id].children.push(templates[elt.id]);
+          // store template
+          var template = templates[elt.id] = elt.value;
+          template.parents = [];
+          template.children = [];
+
+          if (template.parent_id) {
+            var parent = templates[template.parent_id];
+            parent.children.push(template);
+            Y.Array.each(template.parent_ids, function(pid) {
+              template.parents.push(templates[pid]);
+            });
           }
+          // add to tree
           nodes[elt.id] = new YAHOO.widget.TextNode(
             { 
               label: elt.value.name, 
@@ -42,6 +49,18 @@ YUI().use('datasource', 'gallery-treeview', function(Y) {
         });
         tree.subscribe("labelClick", function(node) {
           console.log(templates[node.data.id]);
+          var t = templates[node.data.id];
+          var node = Y.one("#detail");
+          node.set('innerHTML', "<h1>"+t.name+"</h1>");
+          Y.Array.each(Y.clone(t.parents).reverse(), function(p) {
+            Y.Array.each(p.fields, function(f) {
+              node.append('<li class="inherited">'+f+"</li>");
+            });
+          });
+          Y.Array.each(t.fields, function(f) {
+            node.append("<li>"+f+"</li>");
+          });
+
         });        
         tree.render();
       },

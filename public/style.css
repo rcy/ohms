@@ -1,0 +1,14 @@
+.sidebar {
+    width: 20%;
+    float: left;
+}
+.main {
+    background: lightgray;
+    float: right;
+    width: 80%;
+    height: 100%;
+}
+
+.inherited {
+    color: gray;
+}
