@@ -57,9 +57,9 @@ var router = new(journey.Router)(function (map) {
     data.created_at = data.updated_at = Date.now();
     if (type === "template") {
       console.log("creating template");
-      fetchparents(data, function(parents) {
-        data.parents = parents;
-        delete data.parent;
+      fetchparents(data, function(parent_ids) {
+        data.parent_ids = parent_ids;
+        delete data.parent_id;
         console.log(data);
         db.saveDoc(data)
           .then(function (doc) {
@@ -115,15 +115,15 @@ require('http').createServer(function (request, response) {
 }).listen(server_port);
 
 function fetchparents(childdoc, success, failure) {
-  var parent_id = childdoc.parent;
+  var parent_id = childdoc.parent_id;
   if (parent_id) {
     // fetch parent hierarchy
     console.log("fetching parent");
     db.getDoc(parent_id)
-      .then(function(doc) {
-        if (doc) {
-          if (doc.type === childdoc.type) {
-            success && success([parent_id].concat(doc.parents));
+      .then(function(parentdoc) {
+        if (parentdoc) {
+          if (parentdoc.type === childdoc.type) {
+            success && success([parent_id].concat(parentdoc.parent_ids));
           } else {
             failure && failure("parent doc type mismatch");
           }

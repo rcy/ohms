@@ -12,3 +12,5 @@ db:
 drop:
 	curl -XDELETE $(COUCH)/$(DB)
 
+test:
+	sh ./test.sh

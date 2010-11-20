@@ -1,42 +1,52 @@
-var templates = {};
-var root;
-
 YUI().use('datasource', 'gallery-treeview', function(Y) {
-  //Associate the YAHOO variable with and instance of Dav Glass's
-  //Port utility:
+  //Associate the YAHOO variable with and instance of Dav Glass's Port utility
   var YAHOO = Y.Port();
 
   var templateDS = new Y.DataSource.IO({source:"/api/template"});
-  //Normalize the data sent to myCallback
-  templateDS.plug({fn: Y.Plugin.DataSourceJSONSchema, cfg: {
-    schema: {
-      resultListLocator: "rows",
-      resultFields: ["id", "value"]
+  // normalize data
+  templateDS.plug( { 
+    fn: Y.Plugin.DataSourceJSONSchema, 
+    cfg: { 
+      schema: {
+        resultListLocator: "rows",
+        resultFields: ["id", "value"]
+      }
     }
-  }});
+  });
 
   // setup the treeview
   var tree = new YAHOO.widget.TreeView("templateTree");
   var rootNode = tree.getRoot();
   var nodes = {};
+  var templates = {};
 
   // request templates in database
   templateDS.sendRequest({
     request: "",
     callback: { 
       success: function(e){
-        console.log(e.response);
-        // for each template doc, add it to the tree
+        // for each template doc, add it to the tree and to the templates
         Y.Array.each(e.response.results, function(elt) {
-          var id = elt.id;
-          var label = elt.value.name;
-          var parent_id = elt.value.parent;
-          nodes[id] = new YAHOO.widget.TextNode(label, nodes[parent_id] || rootNode);
+          templates[elt.id] = elt.value;
+          templates[elt.id].children = [];
+          if (elt.value.parent_id) {
+            templates[elt.value.parent_id].children.push(templates[elt.id]);
+          }
+          nodes[elt.id] = new YAHOO.widget.TextNode(
+            { 
+              label: elt.value.name, 
+              id: elt.id,
+              expanded: true
+            }
+            , nodes[elt.value.parent_id] || rootNode);
         });
+        tree.subscribe("labelClick", function(node) {
+          console.log(templates[node.data.id]);
+        });        
         tree.render();
       },
       failure: function(e){
-        console.log(e.error.message);
+        alert(e.error.message);
       }
     }
   });

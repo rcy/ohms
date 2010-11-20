@@ -26,7 +26,7 @@ ddoc.validate_doc_update =
     case "template":
       validate("name");
       validate("fields", is_array);
-      validate("parents", is_array);
+      validate("parent_ids", is_array);
       break;
     case "class":
       validate("name");
@@ -43,8 +43,8 @@ ddoc.validate_doc_update =
 ddoc.views.treeview = {
   map: function(doc) {
     if (doc.type) {
-      emit([doc.type, doc.parents.length], 
-           { name: doc.name, parent: doc.parents[0] });
+      emit([doc.type, doc.parent_ids.length], 
+           { name: doc.name, parent_id: doc.parent_ids[0] });
     }
   }
 };
@@ -53,9 +53,9 @@ ddoc.views.tree = {
   map: function(doc) {
     if (doc.type) {
       emit([doc._id, 0], null);
-      if (doc.parents) {
-        for (var i in doc.parents) {
-          emit([doc._id, Number(i)+1], {_id: doc.parents[i]});
+      if (doc.parent_ids) {
+        for (var i in doc.parent_ids) {
+          emit([doc._id, Number(i)+1], {_id: doc.parent_ids[i]});
         }
       }
     }
