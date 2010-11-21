@@ -1,6 +1,4 @@
-
-
-YUI().use('datasource', 'tabview', 'gallery-treeview', function(Y) {
+YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
   function fields_for(template) {
     var fields = [];
     Y.Array.each(Y.clone(template.parents).reverse(), function(p) {
@@ -14,8 +12,6 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', function(Y) {
     return fields;
   }
 
-
-
   //setup tabs
   var tabview = new Y.TabView({
     srcNode: '#detail'
@@ -27,27 +23,23 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', function(Y) {
 
   var templateDS = new Y.DataSource.IO({source:"/api/template"});
   // normalize data
-  templateDS.plug( { 
-    fn: Y.Plugin.DataSourceJSONSchema, 
-    cfg: { 
-      schema: {
-        resultListLocator: "rows",
-        resultFields: ["id", "value"]
-      }
-    }
-  });
+  templateDS.plug( { fn: Y.Plugin.DataSourceJSONSchema, 
+                     cfg: { 
+                       schema: {
+                         resultListLocator: "rows",
+                         resultFields: ["id", "value"]
+                       }}});
+  templateDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
 
   var objectDS = new Y.DataSource.IO({source:"/api/class"});
   // normalize data
-  objectDS.plug( { 
-    fn: Y.Plugin.DataSourceJSONSchema, 
-    cfg: { 
-      schema: {
-        resultListLocator: "rows",
-        resultFields: ["id", "value"]
-      }
-    }
-  });
+  objectDS.plug( { fn: Y.Plugin.DataSourceJSONSchema, 
+                   cfg: { 
+                     schema: {
+                       resultListLocator: "rows",
+                       resultFields: ["id", "value"]
+                     }}});
+  objectDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
 
   // setup the treeview
   var tree = new YAHOO.widget.TreeView("templateTree");

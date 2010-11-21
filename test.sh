@@ -21,9 +21,19 @@ curl -H"Content-type: application/json" -d'{"_id":"id_monitor", "name":"monitor"
 curl -H"Content-type: application/json" -d'{"_id":"id_lcd", "name":"lcd", "fields":["dotpitch"], "parent_id":"id_monitor"}' $base/template
 curl -H"Content-type: application/json" -d'{"_id":"id_crt", "name":"crt", "fields":["date of manufacture"], "parent_id":"id_monitor"}' $base/template
 
+curl -H"Content-type: application/json" -d'{"_id":"id_system", "name":"system", "fields":[], "parent_id":"id_widget"}' $base/template
+curl -H"Content-type: application/json" -d'{"_id":"id_laptop", "name":"laptop", "fields":[], "parent_id":"id_system"}' $base/template
+
+curl -H"Content-type: application/json" -d'{"_id":"id_cellphone", "name":"cellphone", "fields":[], "parent_id":"id_widget"}' $base/template
+
 echo;echo "---- types/kinds/classes/objects"
 curl -H"Content-type: application/json" -d'{"_id":"my_crt", "parent_id":"id_crt", "fields":{"make":"NEC", "model":"AccuSync 700", "size":"17\"", "resolution":"1280x1024", "date of manufacture":"2001"}}' $base/class
 curl -H"Content-type: application/json" -d'{"_id":"my_lcd", "parent_id":"id_lcd", "fields":{"make":"Samsung", "model":"SyncMaster 930B", "size":"19\"", "resolution":"1600x1200", "date of manufacture":"2006"}}' $base/class
+curl -H"Content-type: application/json" -d'{"_id":"my_keyboard", "parent_id":"id_keyboard", "fields":{"make":"PFU", "model":"Happy Hacking", "port":"ps/2", "number of keys":"60"}}' $base/class
+curl -H"Content-type: application/json" -d'{"_id":"my_laptop", "parent_id":"id_laptop", "fields":{"make":"Fujitsu", "model":"Lifebook A Series"}}' $base/class
+curl -H"Content-type: application/json" -d'{"_id":"my_thumb", "parent_id":"id_thumbdrive", "fields":{"make":"Alcor", "model":"Transcend JetFlash", "capacity":"2 Gig"}}' $base/class
+curl -H"Content-type: application/json" -d'{"_id":"my_cell", "parent_id":"id_cellphone", "fields":{"make":"LG", "model":"LG230"}}' $base/class
+
 
 # items/stock items/inventory
 
