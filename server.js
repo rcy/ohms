@@ -1,3 +1,4 @@
+// rename template to class, class to object, item to copy
 var sys = require('sys');
 var journey = require('journey');
 var server_port = 8080;
@@ -6,15 +7,28 @@ var client = couchdb.createClient({port:5984});
 var db = client.db(process.argv[2]);
 
 var router = new(journey.Router)(function (map) {
-  map.get(/^api\/([a-z]+)$/).bind(function (res, type) {
-    db.view('app', 'treeview', { startkey: [type,0]
-                                 , endkey: [type,9999]
+  map.get(/^api\/template$/).bind(function (res) {
+    db.view('app', 'treeview', { startkey: ['template',0]
+                                 , endkey: ['template',9999]
                                  , include_docs: false})
       .then(function (doc) {
         res.send(200, {}, doc);
       }, function(err) {
         res.send(err.status, {}, err);
       });
+  });
+
+  map.get(/^api\/class$/).bind(function (res, params) {
+    if (params.template) {
+      db.view('app', 'classes', { key: params.template })
+        .then(function (doc) {
+          res.send(200, {}, doc);
+        }, function(err) {
+          res.send(err.status, {}, err);
+        });
+    } else {
+      res.send(403, {}, {error:"template param required"});
+    }
   });
 
   // GET type/id
@@ -55,21 +69,21 @@ var router = new(journey.Router)(function (map) {
   map.post(/^api\/([a-z]+)$/).bind(function (res, type, data) {
     data.type = type;
     data.created_at = data.updated_at = Date.now();
-    if (type === "template") {
-      console.log("creating template");
+    switch (type) {
+    case "class":
+    case "template":
+      console.log("creating " + type);
       fetchparents(data, function(parent_ids) {
         data.parent_ids = parent_ids;
         delete data.parent_id;
         console.log(data);
-        db.saveDoc(data)
-          .then(function (doc) {
-            res.send(200, {}, doc);
-          }, function(err) {
-            res.send(err.status, {}, err);
-          });
+        db.saveDoc(data).then(function (doc) { res.send(200, {}, doc); }, function(err) { res.send(err.status, {}, err); });
       }, function(message) {
         res.send(403, {}, {error: message});
       });
+      break;
+    default:
+      res.send(403, {}, {error: "unknown document type"});
     }
   });
 
@@ -122,7 +136,7 @@ function fetchparents(childdoc, success, failure) {
     db.getDoc(parent_id)
       .then(function(parentdoc) {
         if (parentdoc) {
-          if (parentdoc.type === childdoc.type) {
+          if (parentdoc.type === "template") {
             success && success([parent_id].concat(parentdoc.parent_ids));
           } else {
             failure && failure("parent doc type mismatch");

@@ -21,7 +21,12 @@ curl -H"Content-type: application/json" -d'{"_id":"id_monitor", "name":"monitor"
 curl -H"Content-type: application/json" -d'{"_id":"id_lcd", "name":"lcd", "fields":["dotpitch"], "parent_id":"id_monitor"}' $base/template
 curl -H"Content-type: application/json" -d'{"_id":"id_crt", "name":"crt", "fields":["date of manufacture"], "parent_id":"id_monitor"}' $base/template
 
+echo;echo "---- types/kinds/classes/objects"
+curl -H"Content-type: application/json" -d'{"_id":"my_crt", "parent_id":"id_crt", "fields":{"make":"NEC", "model":"AccuSync 700", "size":"17\"", "resolution":"1280x1024", "date of manufacture":"2001"}}' $base/class
+curl -H"Content-type: application/json" -d'{"_id":"my_lcd", "parent_id":"id_lcd", "fields":{"make":"Samsung", "model":"SyncMaster 930B", "size":"19\"", "resolution":"1600x1200", "date of manufacture":"2006"}}' $base/class
+
+# items/stock items/inventory
 
 echo;echo
-curl localhost:8080/template/id_mouse
+curl localhost:8080/api/class/my_crt
 echo

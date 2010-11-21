@@ -1,4 +1,21 @@
+
+
 YUI().use('datasource', 'tabview', 'gallery-treeview', function(Y) {
+  function fields_for(template) {
+    var fields = [];
+    Y.Array.each(Y.clone(template.parents).reverse(), function(p) {
+      Y.Array.each(p.fields, function(f) {
+        fields.push(f);
+      });
+    });
+    Y.Array.each(template.fields, function(f) {
+      fields.push(f);
+    });
+    return fields;
+  }
+
+
+
   //setup tabs
   var tabview = new Y.TabView({
     srcNode: '#detail'
@@ -11,6 +28,18 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', function(Y) {
   var templateDS = new Y.DataSource.IO({source:"/api/template"});
   // normalize data
   templateDS.plug( { 
+    fn: Y.Plugin.DataSourceJSONSchema, 
+    cfg: { 
+      schema: {
+        resultListLocator: "rows",
+        resultFields: ["id", "value"]
+      }
+    }
+  });
+
+  var objectDS = new Y.DataSource.IO({source:"/api/class"});
+  // normalize data
+  objectDS.plug( { 
     fn: Y.Plugin.DataSourceJSONSchema, 
     cfg: { 
       schema: {
@@ -65,18 +94,39 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', function(Y) {
           // template tab
           var node = Y.one("#template");
           node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> property</button>');
-          Y.Array.each(Y.clone(t.parents).reverse(), function(p) {
-            Y.Array.each(p.fields, function(f) {
-              node.append('<li class="inherited">'+f+"</li>");
-            });
-          });
-          Y.Array.each(t.fields, function(f) {
-            node.append("<li>"+f+"</li>");
+          Y.Array.each(fields_for(t), function(f) {
+            var className = (t.fields.indexOf(f) < 0) ? "inherited" : "native";
+            node.append('<li class="'+className+'">'+f+"</li>");
           });
 
           // type tab
           node = Y.one("#objects");
-          node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> type</button>');
+          node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> object</button>');
+          objectDS.sendRequest({
+            request: "?template="+t._id,
+            callback: { 
+              success: function(e) {
+                Y.Array.each(e.response.results, function(elt) {
+                  var object = elt.value;
+                  var template = templates[object.parent_ids[0]];
+                  var html = "<li>";
+                  html += '<strong>' + template.name + '</strong>: ';
+                  console.log(template);
+                  Y.Array.each(fields_for(template), function(f) {
+                    var val = object.fields[f];
+                    if (val) {
+                      html += (val + ' ');
+                    }
+                  });
+                  html += "</li>";
+                  node.append(html);
+                });
+              },
+              failure: function(e) {
+                alert(e.error.message);
+              }
+            }
+          });
 
           // items tab
           node = Y.one("#items");

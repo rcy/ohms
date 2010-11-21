@@ -18,6 +18,12 @@ ddoc.validate_doc_update =
         forbid("Field '" + field + "' is not an Array");
       }
     }
+    function is_object(field) {
+      var value = newDoc[field];
+      if (typeof value !== 'object') {
+        forbid("Field '" + field + "' is not an Object");
+      }
+    }
     
     validate("created_at");
     validate("updated_at");
@@ -29,8 +35,8 @@ ddoc.validate_doc_update =
       validate("parent_ids", is_array);
       break;
     case "class":
-      validate("name");
-      validate("template");
+      validate("parent_ids", is_array);
+      validate("fields", is_object);
       break;
     case "item":
       validate("class");
@@ -45,6 +51,17 @@ ddoc.views.treeview = {
     if (doc.type) {
       doc.parent_id = doc.parent_ids[0]; // remove this, pointless
       emit([doc.type, doc.parent_ids.length], doc);
+    }
+  }
+};
+
+ddoc.views.classes = {
+  // emit the doc keyed by each of its parent template types
+  map: function(doc) {
+    if (doc.type === "class") {
+      for (var i in doc.parent_ids) {
+        emit(doc.parent_ids[i], doc);
+      }
     }
   }
 };
