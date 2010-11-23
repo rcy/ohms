@@ -20,4 +20,7 @@ DELETE /items/_id
 * todo
 ** create views for pulling all relevant documents in a hierarchical resource
 
-
+datatypes
+properties, attributes, fields
+class or types
+objects are instances of a class

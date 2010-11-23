@@ -85,7 +85,7 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
 
           // template tab
           var node = Y.one("#template");
-          node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> property</button>');
+          node.set('innerHTML', '<button>add</button>');
           Y.Array.each(fields_for(t), function(f) {
             var className = (t.fields.indexOf(f) < 0) ? "inherited" : "native";
             node.append('<li class="'+className+'">'+f+"</li>");
@@ -93,7 +93,7 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
 
           // type tab
           node = Y.one("#objects");
-          node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> object</button>');
+          node.set('innerHTML', '<button>add</button>');
           objectDS.sendRequest({
             request: "?template="+t._id,
             callback: { 
@@ -122,7 +122,7 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
 
           // items tab
           node = Y.one("#items");
-          node.set('innerHTML', '<button>add a new <strong>'+t.name+'</strong> item</button>');
+          node.set('innerHTML', '<button>add</button>');
         });        
       },
       failure: function(e){
