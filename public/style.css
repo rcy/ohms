@@ -3,8 +3,14 @@
     float: left;
 }
 .main {
-    float: right;
-    width: 80%;
+    float: left;
+    width: 40%;
+    height: 100%;
+    background: #f0f0f0;
+}
+.edit {
+    float: left;
+    width: 40%;
     height: 100%;
 }
 

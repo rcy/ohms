@@ -1,5 +1,5 @@
 YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
-  function fields_for(category) {
+  function attrs_for(category) {
     var fields = [];
     Y.Array.each(Y.clone(category.parents).reverse(), function(p) {
       Y.Array.each(p.fields, function(f) {
@@ -10,6 +10,23 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
       fields.push(f);
     });
     return fields;
+  }
+
+  // create a new form from category
+  function create_form(category) {
+    var div = Y.one(".edit");
+    //'<h1>creating new ' + category.name + '</h1>');
+    // load the form template from the server
+    // render it with values from category
+    Y.io("/templates/create_form.html?nocache="+Date.now(), 
+         {on: { start: function(e) { div.set('innerHTML', 'loading...');},
+                complete: function(id, res) { 
+                  div.set('innerHTML', res.responseText);
+                }}});
+    // Y.Array.each(attrs_for(category), function(attr) {
+    //   div.append(attr);
+    //   div.append('<br />');
+    // });
   }
 
   //setup tabs
@@ -80,26 +97,23 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
 
         tree.subscribe("labelClick", function(node) {
           console.log(categories[node.data.id]);
-          var t = categories[node.data.id];
-          Y.one("#header").set('innerHTML', t.name);
+          var cat = categories[node.data.id];
+          Y.one("#header").set('innerHTML', cat.name);
 
           // attributes (make up a category)
           var node = Y.one("#attributes");
           node.set('innerHTML', '<button>add</button>');
-          Y.Array.each(fields_for(t), function(f) {
-            var className = (t.fields.indexOf(f) < 0) ? "inherited" : "native";
-            node.append('<li class="'+className+'">'+f+"</li>");
+          Y.Array.each(attrs_for(cat), function(attr) {
+            var className = (cat.fields.indexOf(attr) < 0) ? "inherited" : "native";
+            node.append('<li class="'+className+'">'+attr+"</li>");
           });
-
-          // objects (actual stock items)
-          node = Y.one("#objects");
-          node.set('innerHTML', '<button>add</button>');
 
           // forms (descriptions of objects)
           node = Y.one("#forms");
-          node.set('innerHTML', '<button>add</button>');
+          node.set('innerHTML', '<button>create new <strong>'+cat.name+'</strong></button>');
+          node.one('button').on('click', function(e) { create_form(cat); });
           formDS.sendRequest({
-            request: "?category="+t._id,
+            request: "?category="+cat._id,
             callback: { 
               success: function(e) {
                 Y.Array.each(e.response.results, function(elt) {
@@ -108,8 +122,8 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
                   var html = "<li>";
                   html += '<strong>' + category.name + '</strong>: ';
                   console.log(category);
-                  Y.Array.each(fields_for(category), function(f) {
-                    var val = form.fields[f];
+                  Y.Array.each(attrs_for(category), function(attr) {
+                    var val = form.fields[attr];
                     if (val) {
                       html += (val + ' ');
                     }
