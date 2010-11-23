@@ -1,4 +1,4 @@
-// rename template to class, class to object, item to copy
+// rename template to category, class to object, item to entity
 var sys = require('sys');
 var journey = require('journey');
 var server_port = 8080;
@@ -7,9 +7,9 @@ var client = couchdb.createClient({port:5984});
 var db = client.db(process.argv[2]);
 
 var router = new(journey.Router)(function (map) {
-  map.get(/^api\/template$/).bind(function (res) {
-    db.view('app', 'treeview', { startkey: ['template',0]
-                                 , endkey: ['template',9999]
+  map.get(/^api\/category$/).bind(function (res) {
+    db.view('app', 'treeview', { startkey: ['category',0]
+                                 , endkey: ['category',9999]
                                  , include_docs: false})
       .then(function (doc) {
         res.send(200, {}, doc);
@@ -19,22 +19,22 @@ var router = new(journey.Router)(function (map) {
   });
 
   map.get(/^api\/class$/).bind(function (res, params) {
-    if (params.template) {
-      db.view('app', 'classes', { key: params.template })
+    if (params.category) {
+      db.view('app', 'classes', { key: params.category })
         .then(function (doc) {
           res.send(200, {}, doc);
         }, function(err) {
           res.send(err.status, {}, err);
         });
     } else {
-      res.send(403, {}, {error:"template param required"});
+      res.send(403, {}, {error:"category param required"});
     }
   });
 
   // GET type/id
   map.get(/^api\/([a-z]+)\/([^&]+).*$/).bind(function (res, type, id) {
     // fetch document via the tree view, and collect hierachy into a single doc
-    if (type === "template") {
+    if (type === "category") {
       db.view('app', 'tree', {startkey: [id, 0], endkey: [id, 9999], include_docs: true})
         .then(function(results) {
           rows = results.rows;
@@ -71,7 +71,7 @@ var router = new(journey.Router)(function (map) {
     data.created_at = data.updated_at = Date.now();
     switch (type) {
     case "class":
-    case "template":
+    case "category":
       console.log("creating " + type);
       fetchparents(data, function(parent_ids) {
         data.parent_ids = parent_ids;
@@ -136,7 +136,7 @@ function fetchparents(childdoc, success, failure) {
     db.getDoc(parent_id)
       .then(function(parentdoc) {
         if (parentdoc) {
-          if (parentdoc.type === "template") {
+          if (parentdoc.type === "category") {
             success && success([parent_id].concat(parentdoc.parent_ids));
           } else {
             failure && failure("parent doc type mismatch");

@@ -29,7 +29,7 @@ ddoc.validate_doc_update =
     validate("updated_at");
 
     switch (newDoc.type) {
-    case "template":
+    case "category":
       validate("name");
       validate("fields", is_array);
       validate("parent_ids", is_array);
@@ -56,7 +56,7 @@ ddoc.views.treeview = {
 };
 
 ddoc.views.classes = {
-  // emit the doc keyed by each of its parent template types
+  // emit the doc keyed by each of its parent category types
   map: function(doc) {
     if (doc.type === "class") {
       for (var i in doc.parent_ids) {

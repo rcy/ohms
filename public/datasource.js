@@ -1,12 +1,12 @@
 YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
-  function fields_for(template) {
+  function fields_for(category) {
     var fields = [];
-    Y.Array.each(Y.clone(template.parents).reverse(), function(p) {
+    Y.Array.each(Y.clone(category.parents).reverse(), function(p) {
       Y.Array.each(p.fields, function(f) {
         fields.push(f);
       });
     });
-    Y.Array.each(template.fields, function(f) {
+    Y.Array.each(category.fields, function(f) {
       fields.push(f);
     });
     return fields;
@@ -21,15 +21,15 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
   //Associate the YAHOO variable with and instance of Dav Glass's Port utility
   var YAHOO = Y.Port();
 
-  var templateDS = new Y.DataSource.IO({source:"/api/template"});
+  var categoryDS = new Y.DataSource.IO({source:"/api/category"});
   // normalize data
-  templateDS.plug( { fn: Y.Plugin.DataSourceJSONSchema, 
+  categoryDS.plug( { fn: Y.Plugin.DataSourceJSONSchema, 
                      cfg: { 
                        schema: {
                          resultListLocator: "rows",
                          resultFields: ["id", "value"]
                        }}});
-  templateDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
+  categoryDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
 
   var objectDS = new Y.DataSource.IO({source:"/api/class"});
   // normalize data
@@ -42,27 +42,27 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
   objectDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
 
   // setup the treeview
-  var tree = new YAHOO.widget.TreeView("templateTree");
+  var tree = new YAHOO.widget.TreeView("categoryTree");
   var rootNode = tree.getRoot();
   var nodes = {};
-  var templates = {};
+  var categories = {};
 
-  // request templates in database
-  templateDS.sendRequest({
+  // request categories in database
+  categoryDS.sendRequest({
     request: "",
     callback: { 
       success: function(e){
         Y.Array.each(e.response.results, function(elt) {
-          // store template
-          var template = templates[elt.id] = elt.value;
-          template.parents = [];
-          template.children = [];
+          // store category
+          var category = categories[elt.id] = elt.value;
+          category.parents = [];
+          category.children = [];
 
-          if (template.parent_id) {
-            var parent = templates[template.parent_id];
-            parent.children.push(template);
-            Y.Array.each(template.parent_ids, function(pid) {
-              template.parents.push(templates[pid]);
+          if (category.parent_id) {
+            var parent = categories[category.parent_id];
+            parent.children.push(category);
+            Y.Array.each(category.parent_ids, function(pid) {
+              category.parents.push(categories[pid]);
             });
           }
           // add to tree
@@ -79,12 +79,12 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
         tree.render();
 
         tree.subscribe("labelClick", function(node) {
-          console.log(templates[node.data.id]);
-          var t = templates[node.data.id];
+          console.log(categories[node.data.id]);
+          var t = categories[node.data.id];
           Y.one("#header").set('innerHTML', t.name);
 
-          // template tab
-          var node = Y.one("#template");
+          // category tab
+          var node = Y.one("#category");
           node.set('innerHTML', '<button>add</button>');
           Y.Array.each(fields_for(t), function(f) {
             var className = (t.fields.indexOf(f) < 0) ? "inherited" : "native";
@@ -95,16 +95,16 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
           node = Y.one("#objects");
           node.set('innerHTML', '<button>add</button>');
           objectDS.sendRequest({
-            request: "?template="+t._id,
+            request: "?category="+t._id,
             callback: { 
               success: function(e) {
                 Y.Array.each(e.response.results, function(elt) {
                   var object = elt.value;
-                  var template = templates[object.parent_ids[0]];
+                  var category = categories[object.parent_ids[0]];
                   var html = "<li>";
-                  html += '<strong>' + template.name + '</strong>: ';
-                  console.log(template);
-                  Y.Array.each(fields_for(template), function(f) {
+                  html += '<strong>' + category.name + '</strong>: ';
+                  console.log(category);
+                  Y.Array.each(fields_for(category), function(f) {
                     var val = object.fields[f];
                     if (val) {
                       html += (val + ' ');
