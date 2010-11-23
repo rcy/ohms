@@ -10,10 +10,10 @@ GET /category
 PUT /category/_id
 DELETE /category/_id
 
-GET /objects
-POST /objects
-PUT /objects/_id
-DELETE /objects/_id
+GET /form
+POST /form
+PUT /form/_id
+DELETE /form/_id
 
 GET /items
 POST /items
@@ -23,7 +23,7 @@ DELETE /items/_id
 * todo
 ** create views for pulling all relevant documents in a hierarchical resource
 
-datatypes
-properties, attributes, fields
-class or types
-objects are instances of a class
+attributes have a name and a datatype
+categories are a heirarchical organization of bundles of attributes
+form's belong to categories
+objects are instances of a form

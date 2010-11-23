@@ -31,15 +31,15 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
                        }}});
   categoryDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
 
-  var objectDS = new Y.DataSource.IO({source:"/api/class"});
+  var formDS = new Y.DataSource.IO({source:"/api/form"});
   // normalize data
-  objectDS.plug( { fn: Y.Plugin.DataSourceJSONSchema, 
+  formDS.plug( { fn: Y.Plugin.DataSourceJSONSchema, 
                    cfg: { 
                      schema: {
                        resultListLocator: "rows",
                        resultFields: ["id", "value"]
                      }}});
-  objectDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
+  formDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
 
   // setup the treeview
   var tree = new YAHOO.widget.TreeView("categoryTree");
@@ -83,29 +83,33 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
           var t = categories[node.data.id];
           Y.one("#header").set('innerHTML', t.name);
 
-          // category tab
-          var node = Y.one("#category");
+          // attributes (make up a category)
+          var node = Y.one("#attributes");
           node.set('innerHTML', '<button>add</button>');
           Y.Array.each(fields_for(t), function(f) {
             var className = (t.fields.indexOf(f) < 0) ? "inherited" : "native";
             node.append('<li class="'+className+'">'+f+"</li>");
           });
 
-          // type tab
+          // objects (actual stock items)
           node = Y.one("#objects");
           node.set('innerHTML', '<button>add</button>');
-          objectDS.sendRequest({
+
+          // forms (descriptions of objects)
+          node = Y.one("#forms");
+          node.set('innerHTML', '<button>add</button>');
+          formDS.sendRequest({
             request: "?category="+t._id,
             callback: { 
               success: function(e) {
                 Y.Array.each(e.response.results, function(elt) {
-                  var object = elt.value;
-                  var category = categories[object.parent_ids[0]];
+                  var form = elt.value;
+                  var category = categories[form.parent_ids[0]];
                   var html = "<li>";
                   html += '<strong>' + category.name + '</strong>: ';
                   console.log(category);
                   Y.Array.each(fields_for(category), function(f) {
-                    var val = object.fields[f];
+                    var val = form.fields[f];
                     if (val) {
                       html += (val + ' ');
                     }
@@ -119,10 +123,6 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
               }
             }
           });
-
-          // items tab
-          node = Y.one("#items");
-          node.set('innerHTML', '<button>add</button>');
         });        
       },
       failure: function(e){

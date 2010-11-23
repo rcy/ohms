@@ -1,4 +1,3 @@
-// rename template to category, class to object, item to entity
 var sys = require('sys');
 var journey = require('journey');
 var server_port = 8080;
@@ -18,9 +17,9 @@ var router = new(journey.Router)(function (map) {
       });
   });
 
-  map.get(/^api\/class$/).bind(function (res, params) {
+  map.get(/^api\/form$/).bind(function (res, params) {
     if (params.category) {
-      db.view('app', 'classes', { key: params.category })
+      db.view('app', 'forms', { key: params.category })
         .then(function (doc) {
           res.send(200, {}, doc);
         }, function(err) {
@@ -70,7 +69,7 @@ var router = new(journey.Router)(function (map) {
     data.type = type;
     data.created_at = data.updated_at = Date.now();
     switch (type) {
-    case "class":
+    case "form":
     case "category":
       console.log("creating " + type);
       fetchparents(data, function(parent_ids) {
