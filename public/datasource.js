@@ -1,4 +1,6 @@
-YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
+YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', function(Y) {
+  console.log(Y.mustache("mustache {{foo}}", {foo: 'hello'}));
+
   function attrs_for(category) {
     var fields = [];
     Y.Array.each(Y.clone(category.parents).reverse(), function(p) {
@@ -12,21 +14,15 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
     return fields;
   }
 
-  // create a new form from category
-  function create_form(category) {
-    var div = Y.one(".edit");
-    //'<h1>creating new ' + category.name + '</h1>');
-    // load the form template from the server
-    // render it with values from category
-    Y.io("/templates/create_form.html?nocache="+Date.now(), 
-         {on: { start: function(e) { div.set('innerHTML', 'loading...');},
-                complete: function(id, res) { 
-                  div.set('innerHTML', res.responseText);
-                }}});
-    // Y.Array.each(attrs_for(category), function(attr) {
-    //   div.append(attr);
-    //   div.append('<br />');
-    // });
+  function display(url, selector, template, view, partials) {
+    var div = Y.one(selector);
+    Y.io(url+'?nocache='+Date.now(), 
+         {on: { 
+           start: function(e) { 
+             div.set('innerHTML', 'loading...');},
+           complete: function(id, res) {
+             div.set('innerHTML', Y.mustache(res.responseText, template, partials));
+           }}});
   }
 
   //setup tabs
@@ -111,7 +107,10 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', function(Y) {
           // forms (descriptions of objects)
           node = Y.one("#forms");
           node.set('innerHTML', '<button>create new <strong>'+cat.name+'</strong></button>');
-          node.one('button').on('click', function(e) { create_form(cat); });
+          node.one('button').on('click', function(e) {
+            display('/templates/create_form.html', "#edit", 
+                    { category_name: cat.name, attrs: attrs_for(cat) });
+          });
           formDS.sendRequest({
             request: "?category="+cat._id,
             callback: { 
