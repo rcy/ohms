@@ -1,6 +1,4 @@
-YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', function(Y) {
-  console.log(Y.mustache("mustache {{foo}}", {foo: 'hello'}));
-
+YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', 'gallery-form', function(Y) {
   function attrs_for(category) {
     var fields = [];
     Y.Array.each(Y.clone(category.parents).reverse(), function(p) {
@@ -42,17 +40,17 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', func
                          resultListLocator: "rows",
                          resultFields: ["id", "value"]
                        }}});
-  categoryDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
+  categoryDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "ohms", expires: 1000 });
 
-  var formDS = new Y.DataSource.IO({source:"/api/form"});
+  var objDS = new Y.DataSource.IO({source:"/api/obj"});
   // normalize data
-  formDS.plug( { fn: Y.Plugin.DataSourceJSONSchema, 
+  objDS.plug( { fn: Y.Plugin.DataSourceJSONSchema, 
                    cfg: { 
                      schema: {
                        resultListLocator: "rows",
                        resultFields: ["id", "value"]
                      }}});
-  formDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "skobj", expires: 1000 });
+  objDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "ohms", expires: 1000 });
 
   // setup the treeview
   var tree = new YAHOO.widget.TreeView("categoryTree");
@@ -104,25 +102,25 @@ YUI().use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', func
             node.append('<li class="'+className+'">'+attr+"</li>");
           });
 
-          // forms (descriptions of objects)
-          node = Y.one("#forms");
+          // objs (descriptions of objects)
+          node = Y.one("#objs");
           node.set('innerHTML', '<button>create new <strong>'+cat.name+'</strong></button>');
           node.one('button').on('click', function(e) {
-            display('/templates/create_form.html', "#edit", 
+            display('/templates/create_obj.html', "#edit", 
                     { category_name: cat.name, attrs: attrs_for(cat) });
           });
-          formDS.sendRequest({
+          objDS.sendRequest({
             request: "?category="+cat._id,
             callback: { 
               success: function(e) {
                 Y.Array.each(e.response.results, function(elt) {
-                  var form = elt.value;
-                  var category = categories[form.parent_ids[0]];
+                  var obj = elt.value;
+                  var category = categories[obj.parent_ids[0]];
                   var html = "<li>";
                   html += '<strong>' + category.name + '</strong>: ';
                   console.log(category);
                   Y.Array.each(attrs_for(category), function(attr) {
-                    var val = form.fields[attr];
+                    var val = obj.fields[attr];
                     if (val) {
                       html += (val + ' ');
                     }

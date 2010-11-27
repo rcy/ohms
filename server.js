@@ -17,9 +17,9 @@ var router = new(journey.Router)(function (map) {
       });
   });
 
-  map.get(/^api\/form$/).bind(function (res, params) {
+  map.get(/^api\/obj$/).bind(function (res, params) {
     if (params.category) {
-      db.view('app', 'forms', { key: params.category })
+      db.view('app', 'objs', { key: params.category })
         .then(function (doc) {
           res.send(200, {}, doc);
         }, function(err) {
@@ -69,7 +69,7 @@ var router = new(journey.Router)(function (map) {
     data.type = type;
     data.created_at = data.updated_at = Date.now();
     switch (type) {
-    case "form":
+    case "obj":
     case "category":
       console.log("creating " + type);
       fetchparents(data, function(parent_ids) {

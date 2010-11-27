@@ -1,4 +1,11 @@
 -*- outline -*-
+
+ohms: Object Hierarchy Management System 
+
+___/\  /\  /\  /\  ___
+     \/  \/  \/  \/
+
+
 * notes on terminology
 http://en.wikipedia.org/wiki/Entity_class
 http://en.wikipedia.org/wiki/Bundle_theory
@@ -10,10 +17,10 @@ GET /category
 PUT /category/_id
 DELETE /category/_id
 
-GET /form
-POST /form
-PUT /form/_id
-DELETE /form/_id
+GET /object
+POST /object
+PUT /object/_id
+DELETE /object/_id
 
 GET /items
 POST /items
@@ -21,9 +28,7 @@ PUT /items/_id
 DELETE /items/_id
 
 * todo
-** create views for pulling all relevant documents in a hierarchical resource
-
 attributes have a name and a datatype
 categories are a heirarchical organization of bundles of attributes
-form's belong to categories
-objects are instances of a form
+objs belong to categories
+items are instances of an obj

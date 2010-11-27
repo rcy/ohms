@@ -34,12 +34,12 @@ ddoc.validate_doc_update =
       validate("fields", is_array);
       validate("parent_ids", is_array);
       break;
-    case "form":
+    case "obj":
       validate("parent_ids", is_array);
       validate("fields", is_object);
       break;
     case "item":
-      validate("form");
+      validate("obj");
       break;
     default:
       forbid("unsupported document type");
@@ -55,10 +55,10 @@ ddoc.views.treeview = {
   }
 };
 
-ddoc.views.forms = {
+ddoc.views.objs = {
   // emit the doc keyed by each of its parent category types
   map: function(doc) {
-    if (doc.type === "form") {
+    if (doc.type === "obj") {
       for (var i in doc.parent_ids) {
         emit(doc.parent_ids[i], doc);
       }
