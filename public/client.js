@@ -1,4 +1,4 @@
-YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', 'gallery-form', function(Y) {
+YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', 'gallery-form', 'gallery-form-values', function(Y) {
   function attrs_for(category) {
     var fields = [];
     Y.Array.each(Y.clone(category.parents).reverse(), function(p) {
@@ -90,7 +90,6 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
         tree.render();
 
         tree.subscribe("labelClick", function(node) {
-          console.log(categories[node.data.id]);
           var cat = categories[node.data.id];
           Y.one("#header").set('innerHTML', cat.name);
 
@@ -106,8 +105,36 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
           node = Y.one("#objs");
           node.set('innerHTML', '<button>create new <strong>'+cat.name+'</strong></button>');
           node.one('button').on('click', function(e) {
-            display('/templates/create_obj.html', "#edit", 
-                    { category_name: cat.name, attrs: attrs_for(cat) });
+
+            // setup the form edit area
+            Y.one("#edit").set('innerHTML', '<h1>Create</h1>');
+            var f = new Y.Form({
+              boundingBox: "#edit",
+              action: '/api/obj',
+              method: 'post',
+              children: [ {type: 'SubmitButton', name: 'submit', value: 'Submit' },
+                          {type: 'HiddenField', name: 'parent_id', value: cat._id} ]
+            });
+
+            // add the category attributes
+            Y.Array.each(attrs_for(cat), function(a) { 
+              f.add({label: a, name: 'fields['+a+']'});
+            });
+            
+            f.subscribe('success', function (args) {
+              console.log(args);
+              alert ('Form submission successful');
+            });
+            f.subscribe('failure', function (args) {
+              alert('Form submission failed');
+            });
+
+            f.render();
+
+
+            // var frm = Y.one('form');
+            // frm.plug(Y.Form.Values);
+            // console.log(frm.values.getValues());
           });
           objDS.sendRequest({
             request: "?category="+cat._id,
@@ -118,7 +145,6 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
                   var category = categories[obj.parent_ids[0]];
                   var html = "<li>";
                   html += '<strong>' + category.name + '</strong>: ';
-                  console.log(category);
                   Y.Array.each(attrs_for(category), function(attr) {
                     var val = obj.fields[attr];
                     if (val) {

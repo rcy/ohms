@@ -36,6 +36,9 @@ ddoc.validate_doc_update =
       break;
     case "obj":
       validate("parent_ids", is_array);
+      if (newDoc['parent_ids'].length < 1) {
+        forbid("parent_ids cannot be empty");
+      }
       validate("fields", is_object);
       break;
     case "item":
