@@ -51,13 +51,14 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
   objDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "ohms", expires: 1000 });
 
   // add category button
-  Y.one('#add_category_btn').on('click', function(e) { 
-    Y.one('#add_category').setContent('');
+  Y.one('#add_category_btn').on('click', function(e) {
+    var cat = e.currentTarget.getData('cat');
     var f = new Y.Form({ boundingBox: '#add_category',
                          action: '/api/category',
                          method: 'post',
                          resetAfterSubmit: true,
                          children: [ {name: 'name', label: 'Name'},
+                                     {type: 'HiddenField', name: 'parent_id', value: cat._id },
                                      {type: 'SubmitButton', name: 'submit', value: 'Save' }
                                    ]
                        });
@@ -104,9 +105,10 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
 
         tree.subscribe("labelClick", function(node) {
           var cat = categories[node.data.id];
-
-          // update add subcategory button
-          Y.one("#add_category_btn").setContent('add <strong>' + cat.name + '</strong> subcategory');
+          // update add subcategory button: TODO: emit an event that can be subscribed to
+          var add_btn = Y.one("#add_category_btn");
+          add_btn.setContent('add <strong>' + cat.name + '</strong> subcategory');
+          add_btn.setData('cat', cat);
 
           // setup middle pane
           Y.one("#header").setContent(cat.name);
