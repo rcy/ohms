@@ -17,3 +17,12 @@
 .inherited {
     color: gray;
 }
+
+.listitem:hover {
+    background: lightgray;
+    cursor: pointer;
+}
+
+.hidden {
+    background: green;
+}

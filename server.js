@@ -75,7 +75,7 @@ var router = new(journey.Router)(function (map) {
       fetchparents(data, function(parent_ids) {
         data.parent_ids = parent_ids;
         delete data.parent_id;
-        console.log(data);
+        data.fields || (data.fields = []);
         db.saveDoc(data).then(function (doc) { res.send(200, {}, doc); }, function(err) { res.send(err.status, {}, err); });
       }, function(message) {
         res.send(403, {}, {error: message});

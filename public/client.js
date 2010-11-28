@@ -1,4 +1,7 @@
 YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', 'gallery-form', 'gallery-form-values', function(Y) {
+  //Associate the YAHOO variable with and instance of Dav Glass's Port utility
+  var YAHOO = Y.Port();
+
   function attrs_for(category) {
     var fields = [];
     Y.Array.each(Y.clone(category.parents).reverse(), function(p) {
@@ -24,13 +27,8 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
   }
 
   //setup tabs
-  var tabview = new Y.TabView({
-    srcNode: '#detail'
-  });
+  var tabview = new Y.TabView({ srcNode: '#detail' });
   tabview.render();
-
-  //Associate the YAHOO variable with and instance of Dav Glass's Port utility
-  var YAHOO = Y.Port();
 
   var categoryDS = new Y.DataSource.IO({source:"/api/category"});
   // normalize data
@@ -51,6 +49,21 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
                        resultFields: ["id", "value"]
                      }}});
   objDS.plug(Y.Plugin.DataSourceCache, { cache: Y.CacheOffline, sandbox: "ohms", expires: 1000 });
+
+  // add category button
+  Y.one('#add_category_btn').on('click', function(e) { 
+    Y.one('#add_category').setContent('');
+    var f = new Y.Form({ boundingBox: '#add_category',
+                         action: '/api/category',
+                         method: 'post',
+                         resetAfterSubmit: true,
+                         children: [ {name: 'name', label: 'Name'},
+                                     {type: 'SubmitButton', name: 'submit', value: 'Save' }
+                                   ]
+                       });
+    f.subscribe('failure', function (args) { alert(args.response.responseText); });
+    f.render();
+  });
 
   // setup the treeview
   var tree = new YAHOO.widget.TreeView("categoryTree");
@@ -77,7 +90,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
             });
           }
           // add to tree
-          nodes[elt.id] = new YAHOO.widget.MenuNode(
+          nodes[elt.id] = new YAHOO.widget.TextNode(
             { 
               label: elt.value.name, 
               id: elt.id,
@@ -91,11 +104,16 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
 
         tree.subscribe("labelClick", function(node) {
           var cat = categories[node.data.id];
-          Y.one("#header").set('innerHTML', cat.name);
+
+          // update add subcategory button
+          Y.one("#add_category_btn").setContent('add <strong>' + cat.name + '</strong> subcategory');
+
+          // setup middle pane
+          Y.one("#header").setContent(cat.name);
 
           // attributes (make up a category)
-          var node = Y.one("#attributes");
-          node.set('innerHTML', '<button>add</button>');
+          var node = Y.one("#attribute_list");
+          node.setContent('');
           Y.Array.each(attrs_for(cat), function(attr) {
             var className = (cat.fields.indexOf(attr) < 0) ? "inherited" : "native";
             node.append('<li class="'+className+'">'+attr+"</li>");
@@ -103,34 +121,34 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
 
           // objs (descriptions of objects)
           node = Y.one("#objs");
-          node.set('innerHTML', '<button>create new <strong>'+cat.name+'</strong></button>');
+          var create_html = 'Create new <strong>'+cat.name+'</strong>'
+          node.set('innerHTML', '<button>'+create_html+'</button>');
           node.one('button').on('click', function(e) {
 
             // setup the form edit area
-            Y.one("#edit").set('innerHTML', '<h1>Create</h1>');
-            var f = new Y.Form({
-              boundingBox: "#edit",
-              action: '/api/obj',
-              method: 'post',
-              children: [ {type: 'SubmitButton', name: 'submit', value: 'Submit' },
-                          {type: 'HiddenField', name: 'parent_id', value: cat._id} ]
-            });
+            Y.one("#edit").set('innerHTML', '<h1>'+create_html+'</h1>');
+            var f = new Y.Form({ boundingBox: "#edit",
+                                 action: '/api/obj',
+                                 method: 'post',
+                                 resetAfterSubmit: true,
+                                 children: [ {type: 'HiddenField', name: 'parent_id', value: cat._id} ]
+                               });
 
             // add the category attributes
             Y.Array.each(attrs_for(cat), function(a) { 
               f.add({label: a, name: 'fields['+a+']'});
             });
-            
+            f.add({type: 'SubmitButton', name: 'submit', value: 'Save' });
+
             f.subscribe('success', function (args) {
-              console.log(args);
-              alert ('Form submission successful');
+              // TODO: fire an event to update the object list
+              Y.one("#edit").setContent('');
             });
             f.subscribe('failure', function (args) {
               alert('Form submission failed');
             });
 
             f.render();
-
 
             // var frm = Y.one('form');
             // frm.plug(Y.Form.Values);
@@ -143,7 +161,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
                 Y.Array.each(e.response.results, function(elt) {
                   var obj = elt.value;
                   var category = categories[obj.parent_ids[0]];
-                  var html = "<li>";
+                  var html = '<li class="listitem">';
                   html += '<strong>' + category.name + '</strong>: ';
                   Y.Array.each(attrs_for(category), function(attr) {
                     var val = obj.fields[attr];
@@ -151,7 +169,12 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
                       html += (val + ' ');
                     }
                   });
-                  html += "</li>";
+                  // TODO: enable edit and delete links
+                  //html += '<span style="float: right">'
+                  //html += 'edit ';
+                  //html += '<a href="#">delete</a>';
+                  //html += '</span>';
+                  html += '</li>';
                   node.append(html);
                 });
               },
