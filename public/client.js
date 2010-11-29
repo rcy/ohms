@@ -1,16 +1,5 @@
-YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-treeview', 'cache', 'mustache', 'gallery-form', 'category', function(Y) {
+YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-treeview', 'cache', 'gallery-form', 'category', function(Y) {
   var YAHOO = Y.YUI2;
-
-  function display(url, selector, template, view, partials) {
-    var div = Y.one(selector);
-    Y.io(url+'?nocache='+Date.now(), 
-         {on: { 
-           start: function(e) { 
-             div.set('innerHTML', 'loading...');},
-           complete: function(id, res) {
-             div.set('innerHTML', Y.mustache(res.responseText, template, partials));
-           }}});
-  }
 
   //setup tabs
   var tabview = new Y.TabView({ srcNode: '#detail' });
