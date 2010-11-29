@@ -1,6 +1,5 @@
-YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery-treeview', 'cache', 'mustache', 'gallery-form', 'category', function(Y) {
-  //Associate the YAHOO variable with and instance of Dav Glass's Port utility
-  var YAHOO = Y.Port();
+YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-treeview', 'cache', 'mustache', 'gallery-form', 'category', function(Y) {
+  var YAHOO = Y.YUI2;
 
   function display(url, selector, template, view, partials) {
     var div = Y.one(selector);
