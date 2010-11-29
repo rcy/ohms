@@ -52,7 +52,6 @@ ddoc.validate_doc_update =
 ddoc.views.treeview = {
   map: function(doc) {
     if (doc.type) {
-      doc.parent_id = doc.parent_ids[0]; // remove this, pointless
       emit([doc.type, doc.parent_ids.length], doc);
     }
   }

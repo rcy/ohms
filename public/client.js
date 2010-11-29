@@ -58,7 +58,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
                          method: 'post',
                          resetAfterSubmit: true,
                          children: [ {name: 'name', label: 'Name'},
-                                     {type: 'HiddenField', name: 'parent_id', value: cat._id },
+                                     {type: 'HiddenField', name: 'parent_ids[]', value: cat._id },
                                      {type: 'SubmitButton', name: 'submit', value: 'Save' }
                                    ]
                        });
@@ -97,6 +97,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
 
         tree.subscribe("labelClick", function(node) {
           var cat = node.data.category;
+          console.log(cat);
 
           // update add subcategory button: TODO: emit an event that can be subscribed to
           var add_cat_btn = Y.one("#add_category_btn");
