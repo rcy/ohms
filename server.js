@@ -17,9 +17,9 @@ var router = new(journey.Router)(function (map) {
       });
   });
 
-  map.get(/^api\/obj$/).bind(function (res, params) {
+  map.get(/^api\/thing$/).bind(function (res, params) {
     if (params.category) {
-      db.view('app', 'objs', { key: params.category })
+      db.view('app', 'things', { key: params.category })
         .then(function (doc) {
           res.send(200, {}, doc);
         }, function(err) {
@@ -40,10 +40,10 @@ var router = new(journey.Router)(function (map) {
           console.log(rows);
           if (rows.length > 0) {
             var doc = rows.splice(0,1)[0].doc;
-            doc.allfields = doc.fields;
+            doc.allattrs = doc.attrs;
             console.log(['doc:',doc]);
             for (var i in rows) {
-              doc.allfields = rows[i].doc.fields.concat(doc.allfields);
+              doc.allattrs = rows[i].doc.attrs.concat(doc.allattrs);
             }
             res.send(200, {}, doc);
           } else {
@@ -71,10 +71,10 @@ var router = new(journey.Router)(function (map) {
     new_doc._id = data._id;
     new_doc.created_at = new_doc.updated_at = Date.now();
     switch (type) {
-    case "obj":
+    case "thing":
     case "category":
       new_doc.name = data.name;
-      new_doc.fields = data.fields || [];
+      new_doc.attrs = data.attrs || [];
 
       fetchparents(data.parent_ids, function(parent_ids) {
         new_doc.parent_ids = parent_ids;

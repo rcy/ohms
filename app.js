@@ -31,18 +31,18 @@ ddoc.validate_doc_update =
     switch (newDoc.type) {
     case "category":
       validate("name");
-      validate("fields", is_array);
+      validate("attrs", is_array);
       validate("parent_ids", is_array);
       break;
-    case "obj":
+    case "thing":
       validate("parent_ids", is_array);
       if (newDoc['parent_ids'].length < 1) {
         forbid("parent_ids cannot be empty");
       }
-      validate("fields", is_object);
+      validate("attrs", is_object);
       break;
     case "item":
-      validate("obj");
+      validate("thing");
       break;
     default:
       forbid("unsupported document type");
@@ -57,10 +57,10 @@ ddoc.views.treeview = {
   }
 };
 
-ddoc.views.objs = {
+ddoc.views.things = {
   // emit the doc keyed by each of its parent category types
   map: function(doc) {
-    if (doc.type === "obj") {
+    if (doc.type === "thing") {
       for (var i in doc.parent_ids) {
         emit(doc.parent_ids[i], doc);
       }
