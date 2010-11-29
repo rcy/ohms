@@ -4,8 +4,8 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
 
   function attrs_for(category) {
     var fields = [];
-    Y.Array.each(Y.clone(category.parents).reverse(), function(p) {
-      Y.Array.each(p.fields, function(f) {
+    Y.Array.each(Y.clone(category.parent_ids).reverse(), function(pid) {
+      Y.Array.each(nodes[pid].data.category.fields, function(f) {
         fields.push(f);
       });
     });
@@ -77,7 +77,6 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
   var tree = new YAHOO.widget.TreeView("categoryTree");
   var rootNode = tree.getRoot();
   var nodes = {};
-  var categories = {};
 
   // request categories in database
   categoryDS.sendRequest({
@@ -86,28 +85,18 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
       success: function(e){
         Y.Array.each(e.response.results, function(elt) {
           // store category
-          var category = categories[elt.id] = elt.value;
-          category.parents = [];
-          category.children = [];
-
-          if (category.parent_id) {
-            var parent = categories[category.parent_id];
-            parent.children.push(category);
-            Y.Array.each(category.parent_ids, function(pid) {
-              category.parents.push(categories[pid]);
-            });
-          }
+          var category = elt.value;
           // add to tree
-          nodes[elt.id] = new YAHOO.widget.TextNode( { label: elt.value.name, 
-                                                       id: elt.id,
-                                                       expanded: !elt.value.parent_id }
-                                                     , nodes[elt.value.parent_id] || rootNode);
+          nodes[elt.id] = new YAHOO.widget.TextNode( { label: category.name, 
+                                                       category: category,
+                                                       expanded: !category.parent_ids[0] }
+                                                     , nodes[category.parent_ids[0]] || rootNode);
         });
 
         tree.render();
 
         tree.subscribe("labelClick", function(node) {
-          var cat = categories[node.data.id];
+          var cat = node.data.category;
 
           // update add subcategory button: TODO: emit an event that can be subscribed to
           var add_cat_btn = Y.one("#add_category_btn");
@@ -170,7 +159,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
               success: function(e) {
                 Y.Array.each(e.response.results, function(elt) {
                   var obj = elt.value;
-                  var category = categories[obj.parent_ids[0]];
+                  var category = nodes[obj.parent_ids[0]].data.category;
                   var html = '<li class="listitem">';
                   html += '<strong>' + category.name + '</strong>: ';
                   Y.Array.each(attrs_for(category), function(attr) {
