@@ -1,5 +1,22 @@
-YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-treeview', 'cache', 'gallery-form', 'category', function(Y) {
+YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-treeview', 'cache', 'gallery-form', 'category', 'yui2-datatable', 'yui2-logger', 'collection', function(Y) {
   var YAHOO = Y.YUI2;
+  //YAHOO.widget.Logger.enableBrowserConsole();
+
+  function table(objs) {
+    var myColumnDefs = [
+      {key:"make", sortable:true, resizeable:true},
+      {key:"model", sortable:true, resizeable:true}
+    ];
+    var myDataSource = new YAHOO.util.FunctionDataSource(function() { return objs;});
+    myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
+    myDataSource.responseSchema = {
+      fields : [
+        { key: "make" },
+        { key: "model" }
+      ]
+    };
+    var myDataTable = new YAHOO.widget.DataTable("basic", myColumnDefs, myDataSource, {caption:""});
+  }
 
   //setup tabs
   var tabview = new Y.TabView({ srcNode: '#detail' });
@@ -94,12 +111,11 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
             node.append('<li class="'+className+'">'+attr+"</li>");
           });
 
-          // things (descriptions of things)
+          // // things (descriptions of things)
           node = Y.one("#things");
-          var create_html = 'Create new <strong>'+category.doc.name+'</strong>'
-          node.set('innerHTML', '<button>'+create_html+'</button>');
-          node.one('button').on('click', function(e) {
-
+          // var create_html = 'Create new <strong>'+category.doc.name+'</strong>'
+          // node.set('innerHTML', '<button>'+create_html+'</button>');
+          node.one('span').on('click', function(e) {
             // setup the form edit area
             Y.one("#edit").set('innerHTML', '<h1>'+create_html+'</h1>');
             var f = new Y.Form({ boundingBox: "#edit",
@@ -125,6 +141,8 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
 
             f.render();
           });
+
+
           thingDS.sendRequest({
             request: "?category="+category.doc._id,
             callback: { 
@@ -136,23 +154,11 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
                 Y.Array.each(display_attributes, function (a) { html += '<th>'+a+'</th>'; });
                 html += '</thead>';
 
-                // each thing
-                Y.Array.each(e.response.results, function(elt) {
-                  var thing = elt.value;
-                  console.log("foo");
-                  var category = nodes[thing.parent_ids[0]].data.category;
-                  html += '<tr class="listitem">';
-                  html += '<td>' + category.doc.name + '</td>';
-                  Y.Array.each(display_attributes, function(a) {
-                    var val = thing.attrs[a];
-                    if (val) {
-                      html += '<td>'+ val + '</td>';
-                    }
-                  });
-                  html += '</tr>';
+                var foo = Y.Array.map(e.response.results, function(x) {
+                  return [x.value.attrs.make, x.value.attrs.model];
                 });
-                html += '</table>';
-                node.append(html);
+                //console.log(foo);
+                table(foo);
               },
               failure: function(e) {
                 alert(e.error.message);

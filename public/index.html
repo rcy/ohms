@@ -1,14 +1,15 @@
 <html>
   <head>
+    <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/2.8.2r1/build/datatable/assets/skins/sam/datatable.css">
     <link type="text/css" rel="stylesheet" href="http://yui.yahooapis.com/gallery-2010.02.17-20/build/gallery-treeview/assets/skins/sam/gallery-treeview.css" />
+
     <link type="text/css" rel="stylesheet" href="./style.css" />
-    <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.2.0/build/yui/yui-min.js&gallery-2009.11.02-20/build/gallery-port/gallery-port-min.js&gallery-2009.11.19-20/build/gallery-treeview/gallery-treeview-min.js"></script>
+
+    <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.2.0/build/yui/yui-min.js"></script>
     <script type="text/javascript" src="./category.js"></script>
-    <script type="text/javascript" src="./mustache.js"></script>
-    <!-- <script type="text/javascript" charset="utf-8" src="http://yui.yahooapis.com/3.2.0/build/yui/yui-min.js"></script> -->
 
   </head>
-  <body class="yui3-skin-sam">
+  <body class="yui3-skin-sam yui-skin-sam">
     <div class="sidebar">
       <h1>categories</h1>
       <button id="add_category_btn">add category</button>
@@ -26,7 +27,12 @@
           <li><a href="#attributes">attributes</a></li>
         </ul>
         <div>
-          <div id="things">thing list</div>
+          <div id="things">          
+            <span>add thing</span>
+            <div id="basic">
+              tablehere
+            </div>
+          </div>
           <div id="attributes">
             <div id="attribute_list"></div>
             <button id="add_attr_btn">add attribute</button>
@@ -40,7 +46,6 @@
     </div>
 
     <div id="edit" class="edit">
-      editor pane
     </div>
 
     <div style="clear: both"></div>
