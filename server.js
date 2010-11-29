@@ -66,17 +66,19 @@ var router = new(journey.Router)(function (map) {
   });
 
   map.post(/^api\/([a-z]+)$/).bind(function (res, type, data) {
-    data.type = type;
-    data.created_at = data.updated_at = Date.now();
+    var new_doc = {};
+    new_doc.type = type;
+    new_doc._id = data._id;
+    new_doc.created_at = new_doc.updated_at = Date.now();
     switch (type) {
     case "obj":
     case "category":
-      console.log("creating " + type);
-      fetchparents(data, function(parent_ids) {
-        data.parent_ids = parent_ids;
-        delete data.parent_id;
-        data.fields || (data.fields = []);
-        db.saveDoc(data).then(function (doc) { res.send(200, {}, doc); }, function(err) { res.send(err.status, {}, err); });
+      new_doc.name = data.name;
+      new_doc.fields = data.fields || [];
+
+      fetchparents(data.parent_ids, function(parent_ids) {
+        new_doc.parent_ids = parent_ids;
+        db.saveDoc(new_doc).then(function (doc) { res.send(200, {}, doc); }, function(err) { res.send(err.status, {}, err); });
       }, function(message) {
         res.send(403, {}, {error: message});
       });
@@ -127,27 +129,25 @@ require('http').createServer(function (request, response) {
   });
 }).listen(server_port);
 
-function fetchparents(childdoc, success, failure) {
-  var parent_id = childdoc.parent_id;
-  if (parent_id) {
-    // fetch parent hierarchy
-    console.log("fetching parent");
-    db.getDoc(parent_id)
-      .then(function(parentdoc) {
-        if (parentdoc) {
-          if (parentdoc.type === "category") {
-            success && success([parent_id].concat(parentdoc.parent_ids));
-          } else {
-            failure && failure("parent doc type mismatch");
-          }
-        } else {
-          failure && failure("parent doc not found");
-        }
-      });
-  } else {
-    // no parents
+function fetchparents(parent_ids, success, failure) {
+  var parent_id = parent_ids && parent_ids[0];
+  if (!parent_id) {
     success && success([]);
+    return;
   }
+  // fetch parent hierarchy
+  db.getDoc(parent_id)
+    .then(function(parentdoc) {
+      if (parentdoc) {
+        if (parentdoc.type === "category") {
+          success && success([parent_id].concat(parentdoc.parent_ids));
+        } else {
+          failure && failure("parent doc type mismatch");
+        }
+      } else {
+        failure && failure("parent doc not found: " + parent_id);
+      }
+    });
 }
 
 console.log("listening on " + server_port);
