@@ -23,6 +23,11 @@
     cursor: pointer;
 }
 
+/* .add { */
+/*     text-decoration: none; */
+/*     color: green; */
+/*     font-size: 50%; */
+/* } */
 .hidden {
-    background: green;
+    background: #ddd;
 }
