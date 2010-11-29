@@ -131,7 +131,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
                                  action: '/api/obj',
                                  method: 'post',
                                  resetAfterSubmit: true,
-                                 children: [ {type: 'HiddenField', name: 'parent_id', value: cat._id} ]
+                                 children: [ {type: 'HiddenField', name: 'parent_ids[]', value: cat._id} ]
                                });
 
             // add the category attributes
