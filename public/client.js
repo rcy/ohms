@@ -65,6 +65,13 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
     f.subscribe('failure', function (args) { alert(args.response.responseText); });
     f.render();
   });
+  // add attribute button
+  Y.one('#add_attr_btn').on('click', function(e) {
+    var cat = e.currentTarget.getData('cat');
+    var div = Y.one('#add_attribute');
+    div.removeClass('hidden');
+    e.currentTarget.addClass('hidden');
+  });
 
   // setup the treeview
   var tree = new YAHOO.widget.TreeView("categoryTree");
@@ -91,24 +98,25 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'gallery
             });
           }
           // add to tree
-          nodes[elt.id] = new YAHOO.widget.TextNode(
-            { 
-              label: elt.value.name, 
-              id: elt.id,
-              href: "#",
-              expanded: !elt.value.parent_id
-            }
-            , nodes[elt.value.parent_id] || rootNode);
+          nodes[elt.id] = new YAHOO.widget.TextNode( { label: elt.value.name, 
+                                                       id: elt.id,
+                                                       expanded: !elt.value.parent_id }
+                                                     , nodes[elt.value.parent_id] || rootNode);
         });
 
         tree.render();
 
         tree.subscribe("labelClick", function(node) {
           var cat = categories[node.data.id];
+
           // update add subcategory button: TODO: emit an event that can be subscribed to
-          var add_btn = Y.one("#add_category_btn");
-          add_btn.setContent('add <strong>' + cat.name + '</strong> subcategory');
-          add_btn.setData('cat', cat);
+          var add_cat_btn = Y.one("#add_category_btn");
+          add_cat_btn.setContent('add <strong>' + cat.name + '</strong> subcategory');
+          add_cat_btn.setData('cat', cat);
+
+          var add_attr_btn = Y.one("#add_attr_btn");
+          add_attr_btn.setContent('add <strong>' + cat.name + '</strong> attribute');
+          add_attr_btn.setData('cat', cat);
 
           // setup middle pane
           Y.one("#header").setContent(cat.name);

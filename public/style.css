@@ -29,5 +29,6 @@
 /*     font-size: 50%; */
 /* } */
 .hidden {
+    display: none;
     background: #ddd;
 }
