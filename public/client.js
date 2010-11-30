@@ -2,18 +2,17 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
   var YAHOO = Y.YUI2;
   //YAHOO.widget.Logger.enableBrowserConsole();
 
-  function table(objs) {
-    var myColumnDefs = [
-      {key:"make", sortable:true, resizeable:true},
-      {key:"model", sortable:true, resizeable:true}
-    ];
+  function table(attrs, objs) {
+    //attrs = ['category'].concat(attrs.concat(['...']));
+    var myColumnDefs = Y.Array.map(attrs, function(attr) {
+      return {key:attr, sortable:true, resizable:true};
+    });
     var myDataSource = new YAHOO.util.FunctionDataSource(function() { return objs;});
     myDataSource.responseType = YAHOO.util.DataSource.TYPE_JSARRAY;
     myDataSource.responseSchema = {
-      fields : [
-        { key: "make" },
-        { key: "model" }
-      ]
+      fields : Y.Array.map(attrs, function(attr) {
+        return {key:attr}
+      })
     };
     var myDataTable = new YAHOO.widget.DataTable("basic", myColumnDefs, myDataSource, {caption:""});
   }
@@ -113,11 +112,11 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
 
           // // things (descriptions of things)
           node = Y.one("#things");
-          // var create_html = 'Create new <strong>'+category.doc.name+'</strong>'
+          //var create_html = 'Create new <strong>'+category.doc.name+'</strong>'
           // node.set('innerHTML', '<button>'+create_html+'</button>');
           node.one('span').on('click', function(e) {
             // setup the form edit area
-            Y.one("#edit").set('innerHTML', '<h1>'+create_html+'</h1>');
+            Y.one("#edit").set('innerHTML', '<h1>'+category.doc.name+'</h1>');
             var f = new Y.Form({ boundingBox: "#edit",
                                  action: '/api/thing',
                                  method: 'post',
@@ -149,16 +148,14 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
               success: function(e) {
                 var display_attributes = category.attributes();
 
-                var html = '<table><thead>';
-                html += '<th>category</th>'
-                Y.Array.each(display_attributes, function (a) { html += '<th>'+a+'</th>'; });
-                html += '</thead>';
-
-                var foo = Y.Array.map(e.response.results, function(x) {
-                  return [x.value.attrs.make, x.value.attrs.model];
+                var data = Y.Array.map(e.response.results, function(row) {
+                  var cat = nodes[row.value.parent_ids[0]].label;
+                  return [cat].concat(Y.Array.map(display_attributes, function(attr) {
+                    return row.value.attrs[attr];
+                  }));
                 });
-                //console.log(foo);
-                table(foo);
+
+                table(['category'].concat(display_attributes), data);
               },
               failure: function(e) {
                 alert(e.error.message);
