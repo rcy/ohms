@@ -5,7 +5,7 @@ server:
 	node ./server.js $(DB)
 
 push: db
-	couchapp push app.js $(COUCH)/$(DB)
+	couchapp push db/_design/app.js $(COUCH)/$(DB)
 
 db:
 	curl -XPUT $(COUCH)/$(DB)
