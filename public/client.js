@@ -56,6 +56,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
     f.subscribe('failure', function (args) { alert(args.response.responseText); });
     f.render();
   });
+
   // add attribute button
   Y.one('#add_attr_btn').on('click', function(e) {
     var category = e.currentTarget.getData('category');
@@ -63,6 +64,30 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
     div.removeClass('hidden');
     e.currentTarget.addClass('hidden');
   });
+  // save new attribute button
+  Y.one('#attributes input[type=submit]').on('click',function(e) { 
+    var inp = Y.one('#attributes input[name=name]');
+    Y.fire('ohms:saveattribute', inp.get('value'));
+  });
+
+  // the manager coordinates state and events
+  var Manager = function() {
+    this.category = null;
+
+    Y.on('ohms:saveattribute', function(attrName) {
+      var doc = this.category && this.category.doc;
+
+      if (!doc) { alert('no category document'); return; }
+
+      doc.attrs.push(attrName);
+      this.category.save(function() {console.log('saved attribute');});
+    });
+
+    Y.on('ohms:selectcategory', function(category) {
+      this.category = category;
+    });
+  }();
+
 
   // setup the treeview
   var tree = new YAHOO.widget.TreeView("categoryTree");
@@ -162,6 +187,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
               }
             }
           });
+          Y.fire('ohms:selectcategory', category);
         });        
       },
       failure: function(e){

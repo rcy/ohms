@@ -17,10 +17,10 @@ GET /category
 PUT /category/_id
 DELETE /category/_id
 
-GET /object
-POST /object
-PUT /object/_id
-DELETE /object/_id
+GET /thing
+POST /thing
+PUT /thing/_id
+DELETE /thing/_id
 
 GET /items
 POST /items
@@ -28,7 +28,14 @@ PUT /items/_id
 DELETE /items/_id
 
 * todo
+** now
+allow adding attributes
+allow editing categories
+implement items: items are instances of an obj
+double category submit bug
+don't show 'thing'/'attributes' in tabs, show '<thing> list' / '<thing> attributes'
+add 'other' column for extra attributes of children of current category in list
+
+** later
 attributes have a name and a datatype
-categories are a heirarchical organization of bundles of attributes
-objs belong to categories
-items are instances of an obj
+full text search (lucene or elasticsearch?)

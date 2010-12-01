@@ -12,9 +12,16 @@ var router = new(journey.Router)(function (map) {
                                  , include_docs: false})
       .then(function (doc) {
         res.send(200, {}, doc);
-      }, function(err) {
+      }, function (err) {
         res.send(err.status, {}, err);
       });
+  });
+
+  map.put(/^api\/category\/(.*)$/).bind(function (res, id, data) {
+    console.log(data);
+    db.saveDoc(data)
+      .then(function (doc) { res.send(201, {}, doc); },
+            function (err) { res.send(err.status, {}, err); });
   });
 
   map.get(/^api\/thing$/).bind(function (res, params) {
@@ -22,7 +29,7 @@ var router = new(journey.Router)(function (map) {
       db.view('app', 'things', { key: params.category })
         .then(function (doc) {
           res.send(200, {}, doc);
-        }, function(err) {
+        }, function (err) {
           res.send(err.status, {}, err);
         });
     } else {
@@ -86,15 +93,6 @@ var router = new(journey.Router)(function (map) {
     default:
       res.send(403, {}, {error: "unknown document type"});
     }
-  });
-
-  map.del(/^api\/([a-z]+)\/(.+)\/(.+)$/).bind(function (res, type, id, rev) {
-    db.removeDoc(id, rev)
-      .then(function (doc) {
-        res.send(200, {}, doc);
-      }, function(err) {
-        res.send(err.status, {}, err);
-      });
   });
 });
 
