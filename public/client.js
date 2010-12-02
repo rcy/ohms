@@ -1,7 +1,7 @@
 YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-treeview', 'cache', 'gallery-form', 'category', 'yui2-datatable', 'collection', function(Y) {
   var YAHOO = Y.YUI2;
 
-  function table(attrs, objs) {
+  function table(divid, attrs, objs) {
     //attrs = ['category'].concat(attrs.concat(['...']));
     var myColumnDefs = Y.Array.map(attrs, function(attr) {
       return {key:attr, sortable:true, resizable:true};
@@ -13,7 +13,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
         return {key:attr}
       })
     };
-    var myDataTable = new YAHOO.widget.DataTable("basic", myColumnDefs, myDataSource, {caption:""});
+    var myDataTable = new YAHOO.widget.DataTable(divid, myColumnDefs, myDataSource, {caption:""});
   }
 
   //setup tabs
@@ -134,37 +134,8 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
             node.append('<li class="'+className+'">'+attr+"</li>");
           });
 
-          // // things (descriptions of things)
+          // things (descriptions of things)
           node = Y.one("#list");
-          //var create_html = 'Create new <strong>'+category.doc.name+'</strong>'
-          // node.set('innerHTML', '<button>'+create_html+'</button>');
-          node.one('span').on('click', function(e) {
-            // setup the form edit area
-            Y.one("#edit").set('innerHTML', '<h1>'+category.doc.name+'</h1>');
-            var f = new Y.Form({ boundingBox: "#edit",
-                                 action: '/api/thing',
-                                 method: 'post',
-                                 resetAfterSubmit: true,
-                                 children: [ {type: 'HiddenField', name: 'parent_ids[]', value: category.doc._id} ]
-                               });
-
-            // add the category attributes
-            Y.Array.each(category.attributes(), function(a) { 
-              f.add({label: a, name: 'attrs['+a+']'});
-            });
-            f.add({type: 'SubmitButton', name: 'submit', value: 'Save' });
-
-            f.subscribe('success', function (args) {
-              // TODO: fire an event to update the thing list
-              Y.one("#edit").setContent('');
-            });
-            f.subscribe('failure', function (args) {
-              alert('Form submission failed');
-            });
-
-            f.render();
-          });
-
 
           thingDS.sendRequest({
             request: "?category="+category.doc._id,
@@ -179,7 +150,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
                   }));
                 });
 
-                table(['category'].concat(display_attributes), data);
+                table("table", ['category'].concat(display_attributes), data);
               },
               failure: function(e) {
                 alert(e.error.message);
