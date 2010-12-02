@@ -4,7 +4,9 @@ base=http://localhost:8080/api
 make drop
 make push
 
-curl -H"Content-type: application/json" -d'{"_id":"id_device", "name":"device", "attrs":["make", "model"], "parent_ids":[]}' $base/category
+curl -H"Content-type: application/json" -d'{"_id":"id_base", "name":"base", "attrs":[], "parent_ids":[]}' $base/category
+
+curl -H"Content-type: application/json" -d'{"_id":"id_device", "name":"device", "attrs":["make", "model"], "parent_ids":["id_base"]}' $base/category
 
 curl -H"Content-type: application/json" -d'{"_id":"id_storage", "name":"storage", "attrs":["capacity"], "parent_ids":["id_device"]}' $base/category
 curl -H"Content-type: application/json" -d'{"_id":"id_harddrive", "name":"hard drive", "attrs":[], "parent_ids":["id_storage","id_device"]}' $base/category

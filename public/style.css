@@ -4,14 +4,14 @@
 }
 .main {
     float: left;
-    width: 40%;
-    height: 100%;
+    width: 80%;
     background: #f0f0f0;
+}
+#detail {
 }
 .edit {
     float: left;
     width: 40%;
-    height: 100%;
 }
 
 .inherited {

@@ -19,6 +19,7 @@ var router = new(journey.Router)(function (map) {
 
   map.put(/^api\/category\/(.*)$/).bind(function (res, id, data) {
     console.log(data);
+    data.updated_at = Date.now();
     db.saveDoc(data)
       .then(function (doc) { res.send(201, {}, doc); },
             function (err) { res.send(err.status, {}, err); });

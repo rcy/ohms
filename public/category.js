@@ -13,7 +13,7 @@ YUI.add("category", function(Y) {
 
   Category.prototype.full_name = function() {
     var parent = this.parent(), pname = parent ? parent.doc.name : '';
-    return this.doc.name + ' (' + pname + ')';
+    return this.doc.name + ' < ' + pname;
   }
 
   // returns attributes collected up the parent chain

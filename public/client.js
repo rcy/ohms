@@ -1,6 +1,5 @@
-YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-treeview', 'cache', 'gallery-form', 'category', 'yui2-datatable', 'yui2-logger', 'collection', function(Y) {
+YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-treeview', 'cache', 'gallery-form', 'category', 'yui2-datatable', 'collection', function(Y) {
   var YAHOO = Y.YUI2;
-  //YAHOO.widget.Logger.enableBrowserConsole();
 
   function table(attrs, objs) {
     //attrs = ['category'].concat(attrs.concat(['...']));
@@ -136,7 +135,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
           });
 
           // // things (descriptions of things)
-          node = Y.one("#things");
+          node = Y.one("#list");
           //var create_html = 'Create new <strong>'+category.doc.name+'</strong>'
           // node.set('innerHTML', '<button>'+create_html+'</button>');
           node.one('span').on('click', function(e) {
