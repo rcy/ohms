@@ -24,12 +24,13 @@ YUI.add("thing", function(Y) {
 
           var data = Y.Array.map(e.response.results, function(row) {
             var cat = nodes[row.value.parent_ids[0]].label;
-            return [cat].concat(Y.Array.map(display_attributes, function(attr) {
+            var ts = row.value.updated_at;
+            return [cat,ts].concat(Y.Array.map(display_attributes, function(attr) {
               return row.value.attrs[attr];
             }));
           });
 
-          self.display(['category'].concat(display_attributes), data);
+          self.display(['category', 'updated'].concat(display_attributes), data);
         },
         failure: function(e) {
           alert(e.error.message);

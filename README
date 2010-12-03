@@ -5,7 +5,6 @@ ohms: Object Hierarchy Management System
 ___/\  /\  /\  /\  ___
      \/  \/  \/  \/
 
-
 * notes on terminology
 http://en.wikipedia.org/wiki/Entity_class
 http://en.wikipedia.org/wiki/Bundle_theory
@@ -29,11 +28,8 @@ DELETE /items/_id
 
 * todo
 ** now
-allow adding attributes
 allow editing categories
 implement items: items are instances of an obj
-double category submit bug
-don't show 'thing'/'attributes' in tabs, show '<thing> list' / '<thing> attributes'
 add 'other' column for extra attributes of children of current category in list
 
 ** later

@@ -16,8 +16,8 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
 
   Y.one('#thing_add').on('click', function() {
     var category = g_current_category;
-    Y.one('#content').setContent('');
     Y.one('#current_action').setContent('add')
+    Y.one('#content').setContent('');
     var f = new Y.Form({ boundingBox: "#content",
                          action: '/api/thing',
                          method: 'post',
@@ -25,7 +25,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
                          children: [ {type: 'HiddenField', name: 'parent_ids[]', value: category.doc._id} ]
                        });
 
-    // add the category attributes
+    // build a form out of the category attributes
     Y.Array.each(category.attributes(), function(a) {
       f.add({label: a, name: 'attrs['+a+']'});
     });
