@@ -81,6 +81,7 @@ var router = new(journey.Router)(function (map) {
     switch (type) {
     case "thing":
     case "category":
+      console.log("posting category", JSON.stringify(data));
       new_doc.name = data.name;
       new_doc.attrs = data.attrs || [];
 

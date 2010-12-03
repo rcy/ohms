@@ -1,11 +1,10 @@
 .sidebar {
-    width: 20%;
+    width: 15%;
     float: left;
 }
 .main {
     float: left;
-    width: 80%;
-    background: #f0f0f0;
+    width: 85%;
 }
 #detail {
 }
@@ -19,7 +18,6 @@
 }
 
 .listitem:hover {
-    background: lightgray;
     cursor: pointer;
 }
 
@@ -31,4 +29,7 @@
 .hidden {
     display: none;
     background: #ddd;
+}
+#categoryTree {
+    margin-right: 1em;
 }

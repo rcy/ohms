@@ -5,46 +5,34 @@
 
     <link type="text/css" rel="stylesheet" href="./style.css" />
 
-    <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.2.0/build/yui/yui-min.js"></script>
-    <script type="text/javascript" src="./category.js"></script>
-
   </head>
   <body class="yui3-skin-sam yui-skin-sam">
-    <div class="sidebar">
-      <button id="add_category_btn">add category</button>
-      <div id="add_category"></div>
 
-      <div id="categoryTree"></div>
+    <div class="sidebar">
+      <div id="categoryTree">
+      </div>
     </div>
 
     <div class="main">
-      <div id="header">&nbsp;</div>
-      <div id="detail">
-        <ul>
-          <li><a href="#list">list</a></li>
-          <li><a href="#attributes">edit attributes</a></li>
-        </ul>
-        <div>
-          <div id="list">
-            <div id="table">
-            </div>
-          </div>
-          <div id="attributes">
-            <div id="attribute_list"></div>
-            <button id="add_attr_btn">add attribute</button>
-            <div id="add_attribute" class="hidden">
-              <input type="text" name="name"> 
-              <input type="submit" value="save">
-            </div>
-          </div>
-        </div>
+      <div>
+        <span style="font-size: 200%"><span id="current_category"></span> <span id="current_action"></span></span>
+        <br />
+        <span>
+          (
+          <a href="#" id="category_list">xlistx</a> /
+          <a href="#" id="thing_add">add</a> /
+          <a href="#" id="show_attributes">attributes</a>
+          )
+        </span>
       </div>
-
-      <div id="edit" class="edit">
-      </div>
+      <hr />
+      <div id="content"></div>
     </div>
 
     <div style="clear: both"></div>
   </body>
+  <script type="text/javascript" src="http://yui.yahooapis.com/combo?3.2.0/build/yui/yui-min.js"></script>
+  <script type="text/javascript" src="./category.js"></script>
+  <script type="text/javascript" src="./thing.js"></script>
   <script type="text/javascript" charset="utf-8" src="client.js"></script>
 </html>
