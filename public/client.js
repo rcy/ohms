@@ -68,4 +68,8 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
 
     fn();
   });
+
+  Y.on('thing:showdetail', function(docid) {
+    console.log('view thing: '+docid);
+  });
 });

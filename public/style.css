@@ -21,15 +21,27 @@
     cursor: pointer;
 }
 
-/* .add { */
-/*     text-decoration: none; */
-/*     color: green; */
-/*     font-size: 50%; */
-/* } */
 .hidden {
-    display: none;
+    /* display: none; */
     background: #ddd;
 }
 #categoryTree {
     margin-right: 1em;
+}
+
+.attr-__delete {
+    cursor: pointer;
+    background: transparent url(icons/delete.png) no-repeat center center;
+    width: 16px;  height: 16px;
+}
+.attr-__detail {
+    cursor: pointer;
+    background: transparent url(icons/application_form_magnify.png) no-repeat center center;
+    width: 16px;  height: 16px;
+}
+.attr-_updated_at, .attr-_category {
+    font-size: 80%;
+}
+.attr-_id {
+    display: none;
 }
