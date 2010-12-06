@@ -42,6 +42,7 @@
 .attr-_updated_at, .attr-_category {
     font-size: 80%;
 }
-.attr-_id {
+.attr-_id, .attr-_rev {
+    /* font-size: 60%; */
     display: none;
 }

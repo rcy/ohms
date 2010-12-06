@@ -38,6 +38,28 @@ var router = new(journey.Router)(function (map) {
     }
   });
 
+  map.put(/^api\/thing\/(.+)\/set$/).bind(function (res, id, params) {
+    // this might all be done better with http://wiki.apache.org/couchdb/Document_Update_Handlers
+    var attr = params.attr;
+    var value = params.value;
+    var rev = params._rev;
+    if (!(params.attr && params._rev)) {
+      res.send(401, {}, {error:"Missing params. Need: attr, value, and _rev"});
+      return;
+    }
+
+    db.getDoc(id)
+      .then(function (doc) {
+        // if (doc._rev != rev) {
+        //   res.send(403, {}, {error:"Document update conflict"});
+        //   return;
+        // }
+        doc.attrs[attr] = value;
+        db.saveDoc(doc).then(function (doc) { res.send(200, {}, doc); },
+                             function (err) { res.send(err.status, {}, err); });
+      });
+  });
+
   // GET type/id
   map.get(/^api\/([a-z]+)\/([^&]+).*$/).bind(function (res, type, id) {
     // fetch document via the tree view, and collect hierachy into a single doc

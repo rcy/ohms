@@ -80,3 +80,12 @@ ddoc.views.tree = {
     }
   }
 };
+
+// ddoc.updates = {
+//   inplace: function(doc, req) {
+//     var field = req.query.field;
+//     var value = req.query.value;
+//     doc.attrs[field] = value;
+//     return [doc, 'changed '+field+' to '+value];
+//   }
+// }
