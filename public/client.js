@@ -70,6 +70,7 @@ YUI({gallery: 'gallery-2010.11.12-20-45'}).use('datasource', 'tabview', 'yui2-tr
   });
 
   Y.on('thing:showdetail', function(docid) {
-    console.log('view thing: '+docid);
+    // show futon page for the document for now
+    document.location='http://localhost:5984/_utils/document.html?dummy/'+docid;
   });
 });

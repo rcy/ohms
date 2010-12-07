@@ -81,6 +81,16 @@ ddoc.views.tree = {
   }
 };
 
+ddoc.views.things_by_attrs = {
+  map: function (doc) {
+    if (doc.type === 'thing') {
+      for (var i in doc.attrs) {
+        emit(i, doc.attrs[i]);
+      }
+    }
+  }
+}
+
 // ddoc.updates = {
 //   inplace: function(doc, req) {
 //     var field = req.query.field;

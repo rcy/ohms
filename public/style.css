@@ -36,7 +36,7 @@
 }
 .attr-__detail {
     cursor: pointer;
-    background: transparent url(icons/application_form_magnify.png) no-repeat center center;
+    background: transparent url(icons/couchdb.png) no-repeat center center;
     width: 16px;  height: 16px;
 }
 .attr-_updated_at, .attr-_category {
